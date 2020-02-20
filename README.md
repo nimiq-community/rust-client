@@ -2,24 +2,40 @@
 
 > Rust implementation of the Nimiq RPC client specs.
 
+## About
+A Nimiq RPC client library in Rust. This client library implements the [Nimiq RPC specification](https://github.com/nimiq/core-js/wiki/JSON-RPC-API). The client uses the jsonrpc library to handle JSON-RPC 2.0 requests and responses. For more information about this library see the [jsonrpc documentation](https://docs.rs/jsonrpc/0.11.0/jsonrpc/)
+
 ## Usage
 
-*Placeholder; Rather than starting to delve into the API docs, it'd be great to see what the client looks like in action in this lang plus a rough description what it does. The dev should be able to quickly determine whether the example fits the desired style and problem.*
+``` rust
+use nimiq_rpc::Client;
 
-## API
+fn main() {
+	let client = Client::new("http://seed-host.com:8648/");
+	// If your node uses credentials
+	let client = Client::new_with_credentials("http://seed-host.com:8648/", "user", "password");
+	
+	println!("{:?}", client.accounts().unwrap());
+	println!("{:?}", client.block_number().unwrap());
+	println!("{:?}", client.hashrate().unwrap());
+	println!("{:?}", client.log("*", "log").unwrap());
+}
+```
 
-*Placeholder; All the implemented methods with parameters, types, default values, return types*
+## Documentation
+
+[Docs.rs link](https://docs.rs/nimiq_rpc/0.1.1/nimiq_rpc/struct.Client.html) to the official crate documentation.
 
 ## Installation
 
-*Placeholder; how to add this client to a project. Each language comes with a package manager. To be useful for developers, add a package description file that works with the most commonly used package manager for this language. For example have a `package.json` file for JavaScript or `pom.xml` for Java.*
+Add the [crate](https://crates.io/crates/nimiq_rpc) to your `Cargo.toml` file.
 
 ## Contributions
 
-This implementation was originally contributed by [*Placeholder; Your name with link to GitHub*](https://github.com/nimiq/).
+This implementation was originally contributed by [Eligioo](https://github.com/eligioo/).
 
 Please send your contributions as pull requests.
-Refer to the [issue tracker](issues) for ideas.
+Refer to the [issue tracker](https://github.com/nimiq-community/rust-client/issues) for ideas.
 
 ## License
 
