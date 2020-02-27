@@ -3,6 +3,8 @@
 > Rust implementation of the Nimiq RPC client specs.
 
 ## About
+[![Crates.io](https://img.shields.io/crates/v/nimiq_rpc.svg)](https://crates.io/crates/nimiq_rpc)
+
 A Nimiq RPC client library in Rust. This client library implements the [Nimiq RPC specification](https://github.com/nimiq/core-js/wiki/JSON-RPC-API). The client uses the jsonrpc library to handle JSON-RPC 2.0 requests and responses. For more information about this library see the [jsonrpc documentation](https://docs.rs/jsonrpc/0.11.0/jsonrpc/)
 
 ## Usage
