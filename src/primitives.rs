@@ -33,7 +33,7 @@ pub struct Block {
 	pub transactions: TransactionSequence
 }
 
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct FullBlock {
     pub header: Header,
     pub interlink: String,
@@ -41,35 +41,29 @@ pub struct FullBlock {
     pub body: Body
 }
 
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Header {
     pub version: u64,
-    #[serde(rename = "prevHash")]
     pub prev_hash: String,
-    #[serde(rename = "interlinkHash")]
     pub interlink_hash: String,
-    #[serde(rename = "accountsHash")]
     pub accounts_hash: String,
-    #[serde(rename = "nBits")]
     pub n_bits: u64,
     pub height: u64
 }
 
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Body {
     hash: String,
-    #[serde(rename = "minerAddr")]
     miner_addr: String,
-    #[serde(rename = "extraData")]
     extra_data: String,
     transactions: Vec<String>,
-    #[serde(rename = "merkleHashes")]
     merkle_hashes: Vec<String>,
-    #[serde(rename = "prunedAccounts")]
-    pruned_accounts: Vec<String>,
+    pruned_accounts: Vec<String>
 }
 
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct GetWork {
 	pub data: String,
 	pub suffix: String,
@@ -77,29 +71,26 @@ pub struct GetWork {
 	pub algorithm: String
 }
 
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PeerList {
 	pub id: String,
 	pub address: String,
-	#[serde(rename = "addressState")]
-	pub address_state: i64,
-	#[serde(rename = "connectionState")]
-	pub connection_state: Option<i64>,
-	pub version: Option<i64>,
-	#[serde(rename = "timeOffset")]
+	pub address_state: u64,
+	pub connection_state: Option<u64>,
+	pub version: Option<u64>,
 	pub time_offset: Option<i64>,
-	#[serde(rename = "headHash")]
 	pub head_hash: Option<String>,
-	pub latency: Option<i64>,
-	pub rx: Option<i64>,
-	pub tx: Option<i64>
+	pub latency: Option<u64>,
+	pub rx: Option<u64>,
+	pub tx: Option<u64>
 }
 
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct PeerState {
 	pub id: String,
 	pub address: String,
-	#[serde(rename = "addressState")]
 	pub address_state: u8
 }
 
@@ -110,52 +101,42 @@ pub enum Syncing {
 	Pending(Pending)
 }
 
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Pending {
-	#[serde(rename = "startingBlock")]
 	starting_block: u64,
-	#[serde(rename = "currentBlock")]
 	current_block: u64,
-	#[serde(rename = "highestBlock")]
 	highest_block: u64
 }
 
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Transaction {
 	pub hash: String,
-	#[serde(rename = "blockHash")]
 	pub block_hash: String,
-	#[serde(rename = "blockNumber")]
 	pub block_number: u64,
 	pub timestamp: u64,
 	pub confirmations: u64,
-	#[serde(rename = "transactionIndex")]
-	#[serde(skip_deserializing)] //TODO skip deserializing, have to look into making field optional
-	transaction_index: ::serde_json::Value,
+	pub transaction_index: Option<i64>,
 	pub from: String,
-	#[serde(rename = "fromAddress")]
 	pub from_address: String,
 	pub to: String,
-	#[serde(rename = "toAddress")]
 	pub to_address: String,
 	pub value: u64,
 	pub fee: u64,
-	pub data: ::serde_json::Value,
+	pub data: Option<String>,
 	pub flags: u32
 }
 
-#[derive(Debug, serde_derive::Serialize, serde_derive::Deserialize)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TransactionReceipt {
-	#[serde(rename = "transactionHash")]
 	pub transaction_hash: String,
-	#[serde(rename = "transactionIndex")]
 	pub transaction_index: i64,
-	#[serde(rename = "blockNumber")]
-	pub block_number: i64,
-	#[serde(rename = "blockHash")]
+	pub block_number: u64,
 	pub block_hash: String,
-	pub confirmations: i64,
-	pub timestamp: i64
+	pub confirmations: u64,
+	pub timestamp: u64
 }
 
 #[derive(Debug, Deserialize)]
