@@ -1,18 +1,19 @@
+use jsonrpc::client::Client as RpcClient;
 use jsonrpc::error::Error;
 
-use super::primitives;
+use crate::primitives::*;
 
 pub struct Client {
-	agent: jsonrpc::client::Client
+	agent: RpcClient
 }
 
 impl Client {
 	pub fn new(host: &str) -> Client {
-		Client { agent: jsonrpc::client::Client::new(host.to_owned(), None, None) }
+		Client { agent: RpcClient::new(host.to_owned(), None, None) }
 	}
 
 	pub fn new_with_credentials(host: &str, username: &str, password: &str) -> Client {
-		Client { agent: jsonrpc::client::Client::new(host.to_owned(), Some(username.to_owned()), Some(password.to_owned())) }
+		Client { agent: RpcClient::new(host.to_owned(), Some(username.to_owned()), Some(password.to_owned())) }
 	}
 
 	/// Returns a list of addresses owned by client.
@@ -32,9 +33,9 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.accounts();
 	/// ```
-	pub fn accounts(&self) -> Result<Vec<primitives::Account>, Error>{
+	pub fn accounts(&self) -> Result<Vec<Account>, Error>{
 		let request = self.agent.build_request("accounts", &[]);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<Vec<primitives::Account>>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Vec<Account>>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -107,9 +108,9 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.create_account();
 	/// ```
-	pub fn create_account(&self) -> Result<primitives::Wallet, Error>{
+	pub fn create_account(&self) -> Result<Wallet, Error>{
 		let request = self.agent.build_request("createAccount", &[]);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::Wallet>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Wallet>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -138,9 +139,9 @@ impl Client {
 	///	};
 	/// let result = client.create_raw_transaction(&tx);
 	/// ```
-	pub fn create_raw_transaction(&self, raw_transaction: &primitives::OutgoingTransaction) -> Result<String, Error>{
+	pub fn create_raw_transaction(&self, raw_transaction: &OutgoingTransaction) -> Result<String, Error>{
 		let params = &[
-			serde_json::to_value(&raw_transaction).unwrap()
+			serde_json::to_value(&raw_transaction)?
 		];
 		let request = self.agent.build_request("createRawTransaction", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<String>()) {
@@ -166,12 +167,12 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_account("ad25610feb43d75307763d3f010822a757027429");
 	/// ```
-	pub fn get_account(&self, id: &str) -> Result<primitives::Account, Error>{
+	pub fn get_account(&self, id: &str) -> Result<Account, Error>{
 		let params = &[
-			serde_json::to_value(id).unwrap()
+			serde_json::to_value(id)?
 		];
 		let request = self.agent.build_request("getAccount", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::Account>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Account>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -196,7 +197,7 @@ impl Client {
 	/// ```
 	pub fn get_balance(&self, id: &str) -> Result<u64, Error>{
 		let params = &[
-			serde_json::to_value(id).unwrap()
+			serde_json::to_value(id)?
 		];
 		let request = self.agent.build_request("getBalance", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<u64>()) {
@@ -223,13 +224,13 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_block_by_hash("14c91f6d6f3a0b62271e546bb09461231ab7e4d1ddc2c3e1b93de52d48a1da87", false);
 	/// ```
-	pub fn get_block_by_hash(&self, block_hash: &str, full_transactions: bool) -> Result<primitives::Block, Error>{
+	pub fn get_block_by_hash(&self, block_hash: &str, full_transactions: bool) -> Result<Block, Error>{
 		let params = &[
-			serde_json::to_value(block_hash).unwrap(),
-			serde_json::to_value(full_transactions).unwrap()
+			serde_json::to_value(block_hash)?,
+			serde_json::to_value(full_transactions)?
 		];
 		let request = self.agent.build_request("getBlockByHash", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::Block>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Block>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -253,13 +254,13 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_block_by_number(1234, false);
 	/// ```
-	pub fn get_block_by_number(&self, block_number: u64, full_transactions: bool) -> Result<primitives::Block, Error>{
+	pub fn get_block_by_number(&self, block_number: u64, full_transactions: bool) -> Result<Block, Error>{
 		let params = &[
-			serde_json::to_value(block_number).unwrap(),
-			serde_json::to_value(full_transactions).unwrap()
+			serde_json::to_value(block_number)?,
+			serde_json::to_value(full_transactions)?
 		];
 		let request = self.agent.build_request("getBlockByNumber", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::Block>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Block>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -282,9 +283,9 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_block_template();
 	/// ```
-	pub fn get_block_template(&self) -> Result<primitives::FullBlock, Error>{
+	pub fn get_block_template(&self) -> Result<FullBlock, Error>{
 		let request = self.agent.build_request("getBlockTemplate", &[]);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::FullBlock>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<FullBlock>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -309,7 +310,7 @@ impl Client {
 	/// ```
 	pub fn get_block_transaction_count_by_hash(&self, block_hash: &str) -> Result<u16, Error>{
 		let params = &[
-			serde_json::to_value(block_hash).unwrap()
+			serde_json::to_value(block_hash)?
 		];
 		let request = self.agent.build_request("getBlockTransactionCountByHash", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<u16>()) {
@@ -337,7 +338,7 @@ impl Client {
 	/// ```
 	pub fn get_block_transaction_count_by_number(&self, block_number: u64) -> Result<u16, Error>{
 		let params = &[
-			serde_json::to_value(block_number).unwrap()
+			serde_json::to_value(block_number)?
 		];
 		let request = self.agent.build_request("getBlockTransactionCountByNumber", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<u16>()) {
@@ -364,13 +365,13 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_transaction_by_block_hash_and_index("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f", 20);
 	/// ```
-	pub fn get_transaction_by_block_hash_and_index(&self, block_hash: &str, index: u64) -> Result<primitives::Transaction, Error>{
+	pub fn get_transaction_by_block_hash_and_index(&self, block_hash: &str, index: u64) -> Result<Transaction, Error>{
 		let params = &[
-			serde_json::to_value(block_hash).unwrap(),
-			serde_json::to_value(index).unwrap()
+			serde_json::to_value(block_hash)?,
+			serde_json::to_value(index)?
 		];
 		let request = self.agent.build_request("getTransactionByBlockHashAndIndex", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::Transaction>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Transaction>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -394,13 +395,13 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_transaction_by_block_number_and_index(76415, 20);
 	/// ```
-	pub fn get_transaction_by_block_number_and_index(&self, block_number: u64, index: u16) -> Result<primitives::Transaction, Error>{
+	pub fn get_transaction_by_block_number_and_index(&self, block_number: u64, index: u16) -> Result<Transaction, Error>{
 		let params = &[
-			serde_json::to_value(block_number).unwrap(),
-			serde_json::to_value(index).unwrap()
+			serde_json::to_value(block_number)?,
+			serde_json::to_value(index)?
 		];
 		let request = self.agent.build_request("getTransactionByBlockNumberAndIndex", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::Transaction>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Transaction>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -423,12 +424,12 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_transaction_by_hash("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554");
 	/// ```
-	pub fn get_transaction_by_hash(&self, transaction_hash: &str) -> Result<primitives::Transaction, Error>{
+	pub fn get_transaction_by_hash(&self, transaction_hash: &str) -> Result<Transaction, Error>{
 		let params = &[
-			serde_json::to_value(transaction_hash).unwrap()
+			serde_json::to_value(transaction_hash)?
 		];
 		let request = self.agent.build_request("getTransactionByHash", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::Transaction>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Transaction>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -452,12 +453,12 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_transaction_receipt("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554");
 	/// ```
-	pub fn get_transaction_receipt(&self, transaction_hash: &str) -> Result<primitives::TransactionReceipt, Error>{
+	pub fn get_transaction_receipt(&self, transaction_hash: &str) -> Result<TransactionReceipt, Error>{
 		let params = &[
-			serde_json::to_value(transaction_hash).unwrap()
+			serde_json::to_value(transaction_hash)?
 		];
 		let request = self.agent.build_request("getTransactionReceipt", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::TransactionReceipt>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<TransactionReceipt>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -483,13 +484,13 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_transactions_by_address("NQ69 9A4A MB83 HXDQ 4J46 BH5R 4JFF QMA9 C3GN", 10);
 	/// ```
-	pub fn get_transactions_by_address(&self, address: &str, amount: u16) -> Result<Vec<primitives::Transaction>, Error>{
+	pub fn get_transactions_by_address(&self, address: &str, amount: u16) -> Result<Vec<Transaction>, Error>{
 		let params = &[
-			serde_json::to_value(address).unwrap(),
-			serde_json::to_value(amount).unwrap()
+			serde_json::to_value(address)?,
+			serde_json::to_value(amount)?
 		];
 		let request = self.agent.build_request("getTransactionsByAddress", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<Vec<primitives::Transaction>>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Vec<Transaction>>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -512,9 +513,9 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.get_work();
 	/// ```
-	pub fn get_work(&self) -> Result<primitives::GetWork, Error>{
+	pub fn get_work(&self) -> Result<GetWork, Error>{
 		let request = self.agent.build_request("getWork", &[]);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::GetWork>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<GetWork>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -565,8 +566,8 @@ impl Client {
 	/// ```
 	pub fn log(&self, tag: &str, level: &str) -> Result<bool, Error>{
 		let params = &[
-			serde_json::to_value(tag).unwrap(),
-			serde_json::to_value(level).unwrap()
+			serde_json::to_value(tag)?,
+			serde_json::to_value(level)?
 		];
 		let request = self.agent.build_request("log", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<bool>()) {
@@ -601,7 +602,7 @@ impl Client {
 
 	pub fn miner_threads_with_update(&self, threads: u16) -> Result<u16, Error>{
 		let params = &[
-			serde_json::to_value(threads).unwrap()
+			serde_json::to_value(threads)?
 		];
 		let request = self.agent.build_request("minerThreads", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<u16>()) {
@@ -620,7 +621,7 @@ impl Client {
 
 	pub fn min_fee_per_byte_with_update(&self, fee: u32) -> Result<u32, Error>{
 		let params = &[
-			serde_json::to_value(fee).unwrap()
+			serde_json::to_value(fee)?
 		];
 		let request = self.agent.build_request("minFeePerByte", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<u32>()) {
@@ -679,32 +680,32 @@ impl Client {
     }
 	}
 
-	pub fn peer_list(&self) -> Result<Vec<primitives::PeerList>, Error>{
+	pub fn peer_list(&self) -> Result<Vec<PeerList>, Error>{
 		let request = self.agent.build_request("peerList", &[]);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<Vec<primitives::PeerList>>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Vec<PeerList>>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
 	}
 
-	pub fn peer_state(&self, peer_address: &str) -> Result<primitives::PeerState, Error>{
+	pub fn peer_state(&self, peer_address: &str) -> Result<PeerState, Error>{
 		let params = &[
-			serde_json::to_value(peer_address).unwrap()
+			serde_json::to_value(peer_address)?
 		];
 		let request = self.agent.build_request("peerState", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::PeerState>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<PeerState>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
 	}
 
-	pub fn peer_state_with_update(&self, peer_address: &str, set: &str) -> Result<primitives::PeerState, Error>{
+	pub fn peer_state_with_update(&self, peer_address: &str, set: &str) -> Result<PeerState, Error>{
 		let params = &[
-			serde_json::to_value(peer_address).unwrap(),
-			serde_json::to_value(set).unwrap()
+			serde_json::to_value(peer_address)?,
+			serde_json::to_value(set)?
 		];
 		let request = self.agent.build_request("peerState", params);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::PeerState>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<PeerState>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
@@ -752,7 +753,7 @@ impl Client {
 	/// ```
 	pub fn send_raw_transaction(&self, transaction_hash: &str) -> Result<String, Error>{
 		let params = &[
-			serde_json::to_value(transaction_hash).unwrap()
+			serde_json::to_value(transaction_hash)?
 		];
 		let request = self.agent.build_request("sendRawTransaction", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<String>()) {
@@ -784,9 +785,9 @@ impl Client {
 	///	};
 	/// let result = client.send_transaction(&tx);
 	/// ```
-	pub fn send_transaction(&self, transaction: &primitives::OutgoingTransaction) -> Result<String, Error>{
+	pub fn send_transaction(&self, transaction: &OutgoingTransaction) -> Result<String, Error>{
 		let params = &[
-			serde_json::to_value(transaction).unwrap()
+			serde_json::to_value(transaction)?
 		];
 		let request = self.agent.build_request("sendTransaction", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<String>()) {
@@ -814,7 +815,7 @@ impl Client {
 	/// ```
 	pub fn submit_block(&self, full_block: &str) -> Result<(), Error>{
 		let params = &[
-			serde_json::to_value(full_block).unwrap()
+			serde_json::to_value(full_block)?
 		];
 		let request = self.agent.build_request("submitBlock", params);
     match self.agent.send_request(&request).and_then(|res| res.into_result::<()>()) {
@@ -840,9 +841,9 @@ impl Client {
 	/// let client = Client::new("http://seed-host.com:8648");
 	/// let result = client.syncing();
 	/// ```
-	pub fn syncing(&self) -> Result<primitives::Syncing, Error>{
+	pub fn syncing(&self) -> Result<Syncing, Error>{
 		let request = self.agent.build_request("syncing", &[]);
-    match self.agent.send_request(&request).and_then(|res| res.into_result::<primitives::Syncing>()) {
+    match self.agent.send_request(&request).and_then(|res| res.into_result::<Syncing>()) {
 			Ok(r) => Ok(r),
 			Err(e) => Err(e)
     }
