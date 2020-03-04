@@ -149,8 +149,8 @@ pub enum TransactionSequence {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct OutgoingTransaction {
-    pub from: &'static str,
-    pub to: &'static str,
+    pub from: String,
+    pub to: String,
     pub value: u64,
     pub fee: u32,
 }

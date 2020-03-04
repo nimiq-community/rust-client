@@ -128,8 +128,8 @@ impl Client {
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let tx = nimiq_rpc::primitives::OutgoingTransaction {
-    ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42",
-    ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3",
+    ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42".to_string(),
+    ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3".to_string(),
     ///    value: 100, //Lunas
     ///    fee: 0
     ///	};
@@ -704,8 +704,8 @@ impl Client {
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let tx = nimiq_rpc::primitives::OutgoingTransaction {
-    ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42",
-    ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3",
+    ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42".to_string(),
+    ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3".to_string(),
     ///    value: 100, //Lunas
     ///    fee: 0
     ///	};
@@ -735,8 +735,8 @@ impl Client {
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let tx = nimiq_rpc::primitives::OutgoingTransaction {
-    ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42",
-    ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3",
+    ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42".to_string(),
+    ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3".to_string(),
     ///    value: 100, //Lunas
     ///    fee: 0
     ///	};
