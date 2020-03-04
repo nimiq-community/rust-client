@@ -1,0 +1,18 @@
+[package]
+name = "nimiq_rpc"
+version = "0.1.2"
+authors = ["Stefan Koolen"]
+edition = "2018"
+description = "Nimiq RPC client for Rust"
+repository = "https://github.com/nimiq-community/rust-client"
+readme = "README.md"
+keywords = ["nimiq", "rpc", "json", "blockchain", "cryptocurrency"]
+license = "Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+jsonrpc = "0.11.0"
+serde = { version = "1.0.104", features = ["derive"] }
+serde_json = "1.0.44"
+serde_derive = "1.0.104"
