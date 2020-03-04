@@ -8,7 +8,7 @@ mod tests {
         if host == "http://seed-host.com:8648" || host == "http://seed-host.com:8648/" {
             panic!("You have to change the host to your RPC server in the tests!")
         }
-        Client::new(&host)
+        Client::new(host.to_string())
     }
 
     #[test]

@@ -8,19 +8,15 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn new(host: &str) -> Client {
+    pub fn new(host: String) -> Client {
         Client {
-            agent: RpcClient::new(host.to_owned(), None, None),
+            agent: RpcClient::new(host, None, None),
         }
     }
 
-    pub fn new_with_credentials(host: &str, username: &str, password: &str) -> Client {
+    pub fn new_with_credentials(host: String, username: String, password: String) -> Client {
         Client {
-            agent: RpcClient::new(
-                host.to_owned(),
-                Some(username.to_owned()),
-                Some(password.to_owned()),
-            ),
+            agent: RpcClient::new(host, Some(username), Some(password)),
         }
     }
 
@@ -38,7 +34,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.accounts();
     /// ```
     pub fn accounts(&self) -> Result<Vec<Account>, Error> {
@@ -61,7 +57,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.block_number();
     /// ```
     pub fn block_number(&self) -> Result<u64, Error> {
@@ -84,7 +80,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.consensus();
     /// ```
     pub fn consensus(&self) -> Result<String, Error> {
@@ -107,7 +103,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.create_account();
     /// ```
     pub fn create_account(&self) -> Result<Wallet, Error> {
@@ -130,7 +126,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let tx = nimiq_rpc::primitives::OutgoingTransaction {
     ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42",
     ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3",
@@ -163,7 +159,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_account("ad25610feb43d75307763d3f010822a757027429");
     /// ```
     pub fn get_account(&self, id: &str) -> Result<Account, Error> {
@@ -187,7 +183,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_balance("ad25610feb43d75307763d3f010822a757027429");
     /// ```
     pub fn get_balance(&self, id: &str) -> Result<u64, Error> {
@@ -212,7 +208,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_block_by_hash("14c91f6d6f3a0b62271e546bb09461231ab7e4d1ddc2c3e1b93de52d48a1da87", false);
     /// ```
     pub fn get_block_by_hash(
@@ -244,7 +240,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_block_by_number(1234, false);
     /// ```
     pub fn get_block_by_number(
@@ -275,7 +271,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_block_template();
     /// ```
     pub fn get_block_template(&self) -> Result<FullBlock, Error> {
@@ -298,7 +294,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_block_transaction_count_by_hash("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f");
     /// ```
     pub fn get_block_transaction_count_by_hash(&self, block_hash: &str) -> Result<u16, Error> {
@@ -326,7 +322,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_block_transaction_count_by_number(76415);
     /// ```
     pub fn get_block_transaction_count_by_number(&self, block_number: u64) -> Result<u16, Error> {
@@ -355,7 +351,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_transaction_by_block_hash_and_index("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f", 20);
     /// ```
     pub fn get_transaction_by_block_hash_and_index(
@@ -391,7 +387,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_transaction_by_block_number_and_index(76415, 20);
     /// ```
     pub fn get_transaction_by_block_number_and_index(
@@ -426,7 +422,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_transaction_by_hash("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554");
     /// ```
     pub fn get_transaction_by_hash(&self, transaction_hash: &str) -> Result<Transaction, Error> {
@@ -451,7 +447,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_transaction_receipt("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554");
     /// ```
     pub fn get_transaction_receipt(
@@ -481,7 +477,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_transactions_by_address("NQ69 9A4A MB83 HXDQ 4J46 BH5R 4JFF QMA9 C3GN", 10);
     /// ```
     pub fn get_transactions_by_address(
@@ -512,7 +508,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_work();
     /// ```
     pub fn get_work(&self) -> Result<GetWork, Error> {
@@ -535,7 +531,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.hashrate();
     /// ```
     pub fn hashrate(&self) -> Result<f64, Error> {
@@ -559,7 +555,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.log("*", "log");
     /// ```
     pub fn log(&self, tag: &str, level: &str) -> Result<bool, Error> {
@@ -621,7 +617,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.mining();
     /// ```
     pub fn mining(&self) -> Result<bool, Error> {
@@ -644,7 +640,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.peer_count();
     /// ```
     pub fn peer_count(&self) -> Result<i8, Error> {
@@ -706,7 +702,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let tx = nimiq_rpc::primitives::OutgoingTransaction {
     ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42",
     ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3",
@@ -737,7 +733,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let tx = nimiq_rpc::primitives::OutgoingTransaction {
     ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42",
     ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3",
@@ -767,7 +763,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.submit_block("0da1....234");
     /// ```
     pub fn submit_block(&self, full_block: &str) -> Result<(), Error> {
@@ -791,7 +787,7 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648");
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.syncing();
     /// ```
     pub fn syncing(&self) -> Result<Syncing, Error> {

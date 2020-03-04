@@ -13,9 +13,9 @@ A Nimiq RPC client library in Rust. This client library implements the [Nimiq RP
 use nimiq_rpc::Client;
 
 fn main() {
-	let client = Client::new("http://seed-host.com:8648/");
+	let client = Client::new("http://seed-host.com:8648/".to_string());
 	// If your node uses credentials
-	let client = Client::new_with_credentials("http://seed-host.com:8648/", "user", "password");
+	let client = Client::new_with_credentials("http://seed-host.com:8648/".to_string(), "user".to_string(), "password".to_string());
 	
 	println!("{:?}", client.accounts().unwrap());
 	println!("{:?}", client.block_number().unwrap());
