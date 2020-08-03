@@ -26,7 +26,7 @@ fn main() {
 
 ## Documentation
 
-[Docs.rs link](https://docs.rs/nimiq_rpc/0.1.1/nimiq_rpc/struct.Client.html) to the official crate documentation.
+[Docs.rs link](https://docs.rs/nimiq_rpc/0.1.1/nimiq_rpc/struct.Client.html) to the official crate documentation. And check out the [Nimiq RPC specs](https://github.com/nimiq/core-js/wiki/JSON-RPC-API) for details.
 
 ## Installation
 
