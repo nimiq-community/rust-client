@@ -8,7 +8,7 @@ mod tests {
         if host == "http://seed-host.com:8648" || host == "http://seed-host.com:8648/" {
             panic!("You have to change the host to your RPC server in the tests!")
         }
-        Client::new(host.to_string())
+        Client::new(host)
     }
 
     #[test]
@@ -29,11 +29,19 @@ mod tests {
         assert_eq!(client.consensus().unwrap(), "established");
     }
 
-    // #[test]
-    // fn create_account() {
-    //   let client = client();
-    //   client.create_account().unwrap();
-    // }
+    #[test]
+    fn create_account() {
+        let client = client();
+        client.create_account().unwrap();
+    }
+
+    #[test]
+    fn get_account() {
+        let client = client();
+        client
+            .get_account("NQ07 0000 0000 0000 0000 0000 0000 0000 0000")
+            .unwrap();
+    }
 
     #[test]
     fn get_block_by_hash() {
