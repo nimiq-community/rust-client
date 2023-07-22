@@ -17,11 +17,11 @@ pub struct Account {
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Block {
-    pub number: u64,
+    pub number: u32,
     pub hash: String,
     pub pow: String,
     pub parent_hash: String,
-    pub nonce: u64,
+    pub nonce: u32,
     pub body_hash: String,
     pub accounts_hash: String,
     pub miner: String,
@@ -29,7 +29,7 @@ pub struct Block {
     pub difficulty: String,
     pub extra_data: String,
     pub size: u32,
-    pub timestamp: u64,
+    pub timestamp: u32,
     pub transactions: TransactionSequence,
 }
 
@@ -44,12 +44,12 @@ pub struct FullBlock {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Header {
-    pub version: u64,
+    pub version: u16,
     pub prev_hash: String,
     pub interlink_hash: String,
     pub accounts_hash: String,
-    pub n_bits: u64,
-    pub height: u64,
+    pub n_bits: u32,
+    pub height: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -104,9 +104,9 @@ pub enum Syncing {
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Pending {
-    starting_block: u64,
-    current_block: u64,
-    highest_block: u64,
+    starting_block: u32,
+    current_block: u32,
+    highest_block: u32,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -114,10 +114,10 @@ pub struct Pending {
 pub struct Transaction {
     pub hash: String,
     pub block_hash: String,
-    pub block_number: u64,
-    pub timestamp: u64,
-    pub confirmations: u64,
-    pub transaction_index: Option<i64>,
+    pub block_number: u32,
+    pub timestamp: u32,
+    pub confirmations: u32,
+    pub transaction_index: Option<i32>,
     pub from: String,
     pub from_address: String,
     pub to: String,
@@ -125,18 +125,18 @@ pub struct Transaction {
     pub value: u64,
     pub fee: u64,
     pub data: Option<String>,
-    pub flags: u32,
+    pub flags: u8,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TransactionReceipt {
     pub transaction_hash: String,
-    pub transaction_index: i64,
-    pub block_number: u64,
+    pub transaction_index: i32,
+    pub block_number: u32,
     pub block_hash: String,
-    pub confirmations: u64,
-    pub timestamp: u64,
+    pub confirmations: u32,
+    pub timestamp: u32,
 }
 
 #[derive(Debug, Deserialize)]
@@ -152,7 +152,7 @@ pub struct OutgoingTransaction {
     pub from: String,
     pub to: String,
     pub value: u64,
-    pub fee: u32,
+    pub fee: u64,
 }
 
 #[derive(Debug, Deserialize)]
