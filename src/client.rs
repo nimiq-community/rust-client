@@ -60,10 +60,10 @@ impl Client {
     /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.block_number();
     /// ```
-    pub fn block_number(&self) -> Result<u64, Error> {
+    pub fn block_number(&self) -> Result<u32, Error> {
         self.agent
             .send_request(&self.agent.build_request("blockNumber", &[]))
-            .and_then(|res| res.into_result::<u64>())
+            .and_then(|res| res.into_result::<u32>())
     }
 
     /// Returns information on the current consensus state.
@@ -245,7 +245,7 @@ impl Client {
     /// ```
     pub fn get_block_by_number(
         &self,
-        block_number: u64,
+        block_number: u32,
         full_transactions: bool,
     ) -> Result<Block, Error> {
         let params = &[
@@ -325,7 +325,7 @@ impl Client {
     /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_block_transaction_count_by_number(76415);
     /// ```
-    pub fn get_block_transaction_count_by_number(&self, block_number: u64) -> Result<u16, Error> {
+    pub fn get_block_transaction_count_by_number(&self, block_number: u32) -> Result<u16, Error> {
         let params = &[serde_json::to_value(block_number)?];
         self.agent
             .send_request(
@@ -357,7 +357,7 @@ impl Client {
     pub fn get_transaction_by_block_hash_and_index(
         &self,
         block_hash: &str,
-        index: u64,
+        index: u16,
     ) -> Result<Transaction, Error> {
         let params = &[
             serde_json::to_value(block_hash)?,
@@ -392,7 +392,7 @@ impl Client {
     /// ```
     pub fn get_transaction_by_block_number_and_index(
         &self,
-        block_number: u64,
+        block_number: u32,
         index: u16,
     ) -> Result<Transaction, Error> {
         let params = &[
