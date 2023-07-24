@@ -132,14 +132,14 @@ impl Client {
     ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3".to_string(),
     ///    value: 100, //Lunas
     ///    fee: 0
-    ///	};
+    /// };
     /// let result = client.create_raw_transaction(&tx);
     /// ```
     pub fn create_raw_transaction(
         &self,
         raw_transaction: &OutgoingTransaction,
     ) -> Result<String, Error> {
-        let params = &[serde_json::to_value(&raw_transaction)?];
+        let params = &[serde_json::to_value(raw_transaction)?];
         self.agent
             .send_request(&self.agent.build_request("createRawTransaction", params))
             .and_then(|res| res.into_result::<String>())
@@ -708,7 +708,7 @@ impl Client {
     ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3".to_string(),
     ///    value: 100, //Lunas
     ///    fee: 0
-    ///	};
+    /// };
     /// let result = client.create_raw_transaction(&tx);
     /// let hash = client.send_raw_transaction(&result);
     /// ```
@@ -739,7 +739,7 @@ impl Client {
     ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3".to_string(),
     ///    value: 100, //Lunas
     ///    fee: 0
-    ///	};
+    /// };
     /// let result = client.send_transaction(&tx);
     /// ```
     pub fn send_transaction(&self, transaction: &OutgoingTransaction) -> Result<String, Error> {
