@@ -1,5 +1,4 @@
-use jsonrpc::client::Client as RpcClient;
-use jsonrpc::error::Error;
+use jsonrpc::{arg, client::Client as RpcClient, error::Error, http::minreq_http::Builder};
 
 use crate::primitives::*;
 
@@ -8,15 +7,21 @@ pub struct Client {
 }
 
 impl Client {
-    pub fn new(host: String) -> Client {
+    pub fn new(host: &str) -> Client {
+        let transport = Builder::new().url(host).unwrap().build();
         Client {
-            agent: RpcClient::new(host, None, None),
+            agent: RpcClient::with_transport(transport),
         }
     }
 
-    pub fn new_with_credentials(host: String, username: String, password: String) -> Client {
+    pub fn new_with_credentials(host: &str, username: String, password: String) -> Client {
+        let transport = Builder::new()
+            .url(host)
+            .unwrap()
+            .basic_auth(username, Some(password))
+            .build();
         Client {
-            agent: RpcClient::new(host, Some(username), Some(password)),
+            agent: RpcClient::with_transport(transport),
         }
     }
 
@@ -39,8 +44,8 @@ impl Client {
     /// ```
     pub fn accounts(&self) -> Result<Vec<Account>, Error> {
         self.agent
-            .send_request(&self.agent.build_request("accounts", &[]))
-            .and_then(|res| res.into_result::<Vec<Account>>())
+            .send_request(self.agent.build_request("accounts", &[]))
+            .and_then(|res| res.result::<Vec<Account>>())
     }
 
     /// Returns the height of most recent block.
@@ -62,8 +67,8 @@ impl Client {
     /// ```
     pub fn block_number(&self) -> Result<u32, Error> {
         self.agent
-            .send_request(&self.agent.build_request("blockNumber", &[]))
-            .and_then(|res| res.into_result::<u32>())
+            .send_request(self.agent.build_request("blockNumber", &[]))
+            .and_then(|res| res.result::<u32>())
     }
 
     /// Returns information on the current consensus state.
@@ -85,8 +90,8 @@ impl Client {
     /// ```
     pub fn consensus(&self) -> Result<String, Error> {
         self.agent
-            .send_request(&self.agent.build_request("consensus", &[]))
-            .and_then(|res| res.into_result::<String>())
+            .send_request(self.agent.build_request("consensus", &[]))
+            .and_then(|res| res.result::<String>())
     }
 
     /// Creates a new account and stores its private key in the client store.
@@ -108,8 +113,8 @@ impl Client {
     /// ```
     pub fn create_account(&self) -> Result<Wallet, Error> {
         self.agent
-            .send_request(&self.agent.build_request("createAccount", &[]))
-            .and_then(|res| res.into_result::<Wallet>())
+            .send_request(self.agent.build_request("createAccount", &[]))
+            .and_then(|res| res.result::<Wallet>())
     }
 
     /// Creates and signs a transaction without sending it. The transaction can then be send via `sendRawTransaction` without accidentally replaying it.
@@ -139,10 +144,10 @@ impl Client {
         &self,
         raw_transaction: &OutgoingTransaction,
     ) -> Result<String, Error> {
-        let params = &[serde_json::to_value(raw_transaction)?];
+        let params = &[arg(serde_json::to_value(raw_transaction)?)];
         self.agent
-            .send_request(&self.agent.build_request("createRawTransaction", params))
-            .and_then(|res| res.into_result::<String>())
+            .send_request(self.agent.build_request("createRawTransaction", params))
+            .and_then(|res| res.result::<String>())
     }
 
     /// Returns details for the account of given address.
@@ -163,10 +168,10 @@ impl Client {
     /// let result = client.get_account("ad25610feb43d75307763d3f010822a757027429");
     /// ```
     pub fn get_account(&self, id: &str) -> Result<Account, Error> {
-        let params = &[serde_json::to_value(id)?];
+        let params = &[arg(serde_json::to_value(id)?)];
         self.agent
-            .send_request(&self.agent.build_request("getAccount", params))
-            .and_then(|res| res.into_result::<Account>())
+            .send_request(self.agent.build_request("getAccount", params))
+            .and_then(|res| res.result::<Account>())
     }
 
     /// Returns the balance of the account of given address.
@@ -187,10 +192,10 @@ impl Client {
     /// let result = client.get_balance("ad25610feb43d75307763d3f010822a757027429");
     /// ```
     pub fn get_balance(&self, id: &str) -> Result<u64, Error> {
-        let params = &[serde_json::to_value(id)?];
+        let params = &[arg(serde_json::to_value(id)?)];
         self.agent
-            .send_request(&self.agent.build_request("getBalance", params))
-            .and_then(|res| res.into_result::<u64>())
+            .send_request(self.agent.build_request("getBalance", params))
+            .and_then(|res| res.result::<u64>())
     }
 
     /// Returns information about a block by hash.
@@ -217,12 +222,12 @@ impl Client {
         full_transactions: bool,
     ) -> Result<Block, Error> {
         let params = &[
-            serde_json::to_value(block_hash)?,
-            serde_json::to_value(full_transactions)?,
+            arg(serde_json::to_value(block_hash)?),
+            arg(serde_json::to_value(full_transactions)?),
         ];
         self.agent
-            .send_request(&self.agent.build_request("getBlockByHash", params))
-            .and_then(|res| res.into_result::<Block>())
+            .send_request(self.agent.build_request("getBlockByHash", params))
+            .and_then(|res| res.result::<Block>())
     }
 
     /// Returns information about a block by block number.
@@ -249,12 +254,12 @@ impl Client {
         full_transactions: bool,
     ) -> Result<Block, Error> {
         let params = &[
-            serde_json::to_value(block_number)?,
-            serde_json::to_value(full_transactions)?,
+            arg(serde_json::to_value(block_number)?),
+            arg(serde_json::to_value(full_transactions)?),
         ];
         self.agent
-            .send_request(&self.agent.build_request("getBlockByNumber", params))
-            .and_then(|res| res.into_result::<Block>())
+            .send_request(self.agent.build_request("getBlockByNumber", params))
+            .and_then(|res| res.result::<Block>())
     }
 
     /// Returns a template to build the next block for mining. This will consider pool instructions when connected to a pool.
@@ -276,8 +281,8 @@ impl Client {
     /// ```
     pub fn get_block_template(&self) -> Result<FullBlock, Error> {
         self.agent
-            .send_request(&self.agent.build_request("getBlockTemplate", &[]))
-            .and_then(|res| res.into_result::<FullBlock>())
+            .send_request(self.agent.build_request("getBlockTemplate", &[]))
+            .and_then(|res| res.result::<FullBlock>())
     }
 
     /// Returns the number of transactions in a block from a block matching the given block hash.
@@ -298,14 +303,13 @@ impl Client {
     /// let result = client.get_block_transaction_count_by_hash("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f");
     /// ```
     pub fn get_block_transaction_count_by_hash(&self, block_hash: &str) -> Result<u16, Error> {
-        let params = &[serde_json::to_value(block_hash)?];
+        let params = &[arg(serde_json::to_value(block_hash)?)];
         self.agent
             .send_request(
-                &self
-                    .agent
+                self.agent
                     .build_request("getBlockTransactionCountByHash", params),
             )
-            .and_then(|res| res.into_result::<u16>())
+            .and_then(|res| res.result::<u16>())
     }
 
     /// Returns the number of transactions in a block matching the given block number.
@@ -326,14 +330,13 @@ impl Client {
     /// let result = client.get_block_transaction_count_by_number(76415);
     /// ```
     pub fn get_block_transaction_count_by_number(&self, block_number: u32) -> Result<u16, Error> {
-        let params = &[serde_json::to_value(block_number)?];
+        let params = &[arg(serde_json::to_value(block_number)?)];
         self.agent
             .send_request(
-                &self
-                    .agent
+                self.agent
                     .build_request("getBlockTransactionCountByNumber", params),
             )
-            .and_then(|res| res.into_result::<u16>())
+            .and_then(|res| res.result::<u16>())
     }
 
     /// Returns information about a transaction by block hash and transaction index position.
@@ -360,16 +363,15 @@ impl Client {
         index: u16,
     ) -> Result<Transaction, Error> {
         let params = &[
-            serde_json::to_value(block_hash)?,
-            serde_json::to_value(index)?,
+            arg(serde_json::to_value(block_hash)?),
+            arg(serde_json::to_value(index)?),
         ];
         self.agent
             .send_request(
-                &self
-                    .agent
+                self.agent
                     .build_request("getTransactionByBlockHashAndIndex", params),
             )
-            .and_then(|res| res.into_result::<Transaction>())
+            .and_then(|res| res.result::<Transaction>())
     }
 
     /// Returns information about a transaction by block number and transaction index position.
@@ -396,16 +398,15 @@ impl Client {
         index: u16,
     ) -> Result<Transaction, Error> {
         let params = &[
-            serde_json::to_value(block_number)?,
-            serde_json::to_value(index)?,
+            arg(serde_json::to_value(block_number)?),
+            arg(serde_json::to_value(index)?),
         ];
         self.agent
             .send_request(
-                &self
-                    .agent
+                self.agent
                     .build_request("getTransactionByBlockNumberAndIndex", params),
             )
-            .and_then(|res| res.into_result::<Transaction>())
+            .and_then(|res| res.result::<Transaction>())
     }
 
     /// Returns the information about a transaction requested by transaction hash.
@@ -429,10 +430,10 @@ impl Client {
         &self,
         transaction_hash: &str,
     ) -> Result<TransactionDetails, Error> {
-        let params = &[serde_json::to_value(transaction_hash)?];
+        let params = &[arg(serde_json::to_value(transaction_hash)?)];
         self.agent
-            .send_request(&self.agent.build_request("getTransactionByHash", params))
-            .and_then(|res| res.into_result::<TransactionDetails>())
+            .send_request(self.agent.build_request("getTransactionByHash", params))
+            .and_then(|res| res.result::<TransactionDetails>())
     }
 
     /// Returns the receipt of a transaction by transaction hash.
@@ -457,10 +458,10 @@ impl Client {
         &self,
         transaction_hash: &str,
     ) -> Result<TransactionReceipt, Error> {
-        let params = &[serde_json::to_value(transaction_hash)?];
+        let params = &[arg(serde_json::to_value(transaction_hash)?)];
         self.agent
-            .send_request(&self.agent.build_request("getTransactionReceipt", params))
-            .and_then(|res| res.into_result::<TransactionReceipt>())
+            .send_request(self.agent.build_request("getTransactionReceipt", params))
+            .and_then(|res| res.result::<TransactionReceipt>())
     }
 
     /// Returns the latest transactions successfully performed by or for an address.
@@ -489,12 +490,12 @@ impl Client {
         amount: u16,
     ) -> Result<Vec<TransactionDetails>, Error> {
         let params = &[
-            serde_json::to_value(address)?,
-            serde_json::to_value(amount)?,
+            arg(serde_json::to_value(address)?),
+            arg(serde_json::to_value(amount)?),
         ];
         self.agent
-            .send_request(&self.agent.build_request("getTransactionsByAddress", params))
-            .and_then(|res| res.into_result::<Vec<TransactionDetails>>())
+            .send_request(self.agent.build_request("getTransactionsByAddress", params))
+            .and_then(|res| res.result::<Vec<TransactionDetails>>())
     }
 
     /// Returns instructions to mine the next block. This will consider pool instructions when connected to a pool.
@@ -516,8 +517,8 @@ impl Client {
     /// ```
     pub fn get_work(&self) -> Result<GetWork, Error> {
         self.agent
-            .send_request(&self.agent.build_request("getWork", &[]))
-            .and_then(|res| res.into_result::<GetWork>())
+            .send_request(self.agent.build_request("getWork", &[]))
+            .and_then(|res| res.result::<GetWork>())
     }
 
     /// Returns the number of hashes per second that the node is mining with.
@@ -539,8 +540,8 @@ impl Client {
     /// ```
     pub fn hashrate(&self) -> Result<f64, Error> {
         self.agent
-            .send_request(&self.agent.build_request("hashrate", &[]))
-            .and_then(|res| res.into_result::<f64>())
+            .send_request(self.agent.build_request("hashrate", &[]))
+            .and_then(|res| res.result::<f64>())
     }
 
     /// Sets the log level of the node.
@@ -562,48 +563,51 @@ impl Client {
     /// let result = client.log("*", "log");
     /// ```
     pub fn log(&self, tag: &str, level: &str) -> Result<bool, Error> {
-        let params = &[serde_json::to_value(tag)?, serde_json::to_value(level)?];
+        let params = &[
+            arg(serde_json::to_value(tag)?),
+            arg(serde_json::to_value(level)?),
+        ];
         self.agent
-            .send_request(&self.agent.build_request("log", params))
-            .and_then(|res| res.into_result::<bool>())
+            .send_request(self.agent.build_request("log", params))
+            .and_then(|res| res.result::<bool>())
     }
 
     pub fn mempool_content(&self) -> Result<Vec<String>, Error> {
         self.agent
-            .send_request(&self.agent.build_request("mempoolContent", &[]))
-            .and_then(|res| res.into_result::<Vec<String>>())
+            .send_request(self.agent.build_request("mempoolContent", &[]))
+            .and_then(|res| res.result::<Vec<String>>())
     }
 
     pub fn miner_address(&self) -> Result<String, Error> {
         self.agent
-            .send_request(&self.agent.build_request("minerAddress", &[]))
-            .and_then(|res| res.into_result::<String>())
+            .send_request(self.agent.build_request("minerAddress", &[]))
+            .and_then(|res| res.result::<String>())
     }
 
     pub fn miner_threads(&self) -> Result<u8, Error> {
         self.agent
-            .send_request(&self.agent.build_request("minerThreads", &[]))
-            .and_then(|res| res.into_result::<u8>())
+            .send_request(self.agent.build_request("minerThreads", &[]))
+            .and_then(|res| res.result::<u8>())
     }
 
     pub fn miner_threads_with_update(&self, threads: u16) -> Result<u16, Error> {
-        let params = &[serde_json::to_value(threads)?];
+        let params = &[arg(serde_json::to_value(threads)?)];
         self.agent
-            .send_request(&self.agent.build_request("minerThreads", params))
-            .and_then(|res| res.into_result::<u16>())
+            .send_request(self.agent.build_request("minerThreads", params))
+            .and_then(|res| res.result::<u16>())
     }
 
     pub fn min_fee_per_byte(&self) -> Result<u32, Error> {
         self.agent
-            .send_request(&self.agent.build_request("minFeePerByte", &[]))
-            .and_then(|res| res.into_result::<u32>())
+            .send_request(self.agent.build_request("minFeePerByte", &[]))
+            .and_then(|res| res.result::<u32>())
     }
 
     pub fn min_fee_per_byte_with_update(&self, fee: u32) -> Result<u32, Error> {
-        let params = &[serde_json::to_value(fee)?];
+        let params = &[arg(serde_json::to_value(fee)?)];
         self.agent
-            .send_request(&self.agent.build_request("minFeePerByte", params))
-            .and_then(|res| res.into_result::<u32>())
+            .send_request(self.agent.build_request("minFeePerByte", params))
+            .and_then(|res| res.result::<u32>())
     }
 
     /// Returns `true` if client is actively mining new blocks.
@@ -625,8 +629,8 @@ impl Client {
     /// ```
     pub fn mining(&self) -> Result<bool, Error> {
         self.agent
-            .send_request(&self.agent.build_request("mining", &[]))
-            .and_then(|res| res.into_result::<bool>())
+            .send_request(self.agent.build_request("mining", &[]))
+            .and_then(|res| res.result::<bool>())
     }
 
     /// Returns number of peers currently connected to the client.
@@ -648,21 +652,21 @@ impl Client {
     /// ```
     pub fn peer_count(&self) -> Result<i8, Error> {
         self.agent
-            .send_request(&self.agent.build_request("peerCount", &[]))
-            .and_then(|res| res.into_result::<i8>())
+            .send_request(self.agent.build_request("peerCount", &[]))
+            .and_then(|res| res.result::<i8>())
     }
 
     pub fn peer_list(&self) -> Result<Vec<PeerList>, Error> {
         self.agent
-            .send_request(&self.agent.build_request("peerList", &[]))
-            .and_then(|res| res.into_result::<Vec<PeerList>>())
+            .send_request(self.agent.build_request("peerList", &[]))
+            .and_then(|res| res.result::<Vec<PeerList>>())
     }
 
     pub fn peer_state(&self, peer_address: &str) -> Result<PeerState, Error> {
-        let params = &[serde_json::to_value(peer_address)?];
+        let params = &[arg(serde_json::to_value(peer_address)?)];
         self.agent
-            .send_request(&self.agent.build_request("peerState", params))
-            .and_then(|res| res.into_result::<PeerState>())
+            .send_request(self.agent.build_request("peerState", params))
+            .and_then(|res| res.result::<PeerState>())
     }
 
     pub fn peer_state_with_update(
@@ -671,24 +675,24 @@ impl Client {
         set: &str,
     ) -> Result<PeerState, Error> {
         let params = &[
-            serde_json::to_value(peer_address)?,
-            serde_json::to_value(set)?,
+            arg(serde_json::to_value(peer_address)?),
+            arg(serde_json::to_value(set)?),
         ];
         self.agent
-            .send_request(&self.agent.build_request("peerState", params))
-            .and_then(|res| res.into_result::<PeerState>())
+            .send_request(self.agent.build_request("peerState", params))
+            .and_then(|res| res.result::<PeerState>())
     }
 
     pub fn pool_confirmed_balance(&self) -> Result<u64, Error> {
         self.agent
-            .send_request(&self.agent.build_request("poolConfirmedBalance", &[]))
-            .and_then(|res| res.into_result::<u64>())
+            .send_request(self.agent.build_request("poolConfirmedBalance", &[]))
+            .and_then(|res| res.result::<u64>())
     }
 
     pub fn pool_connection_state(&self) -> Result<u8, Error> {
         self.agent
-            .send_request(&self.agent.build_request("poolConnectionState", &[]))
-            .and_then(|res| res.into_result::<u8>())
+            .send_request(self.agent.build_request("poolConnectionState", &[]))
+            .and_then(|res| res.result::<u8>())
     }
 
     /// Sends a signed message call transaction or a contract creation, if the data field contains code.
@@ -716,10 +720,10 @@ impl Client {
     /// let hash = client.send_raw_transaction(&result);
     /// ```
     pub fn send_raw_transaction(&self, transaction_hash: &str) -> Result<String, Error> {
-        let params = &[serde_json::to_value(transaction_hash)?];
+        let params = &[arg(serde_json::to_value(transaction_hash)?)];
         self.agent
-            .send_request(&self.agent.build_request("sendRawTransaction", params))
-            .and_then(|res| res.into_result::<String>())
+            .send_request(self.agent.build_request("sendRawTransaction", params))
+            .and_then(|res| res.result::<String>())
     }
 
     /// Creates new message call transaction or a contract creation, if the data field contains code.
@@ -746,10 +750,10 @@ impl Client {
     /// let result = client.send_transaction(&tx);
     /// ```
     pub fn send_transaction(&self, transaction: &OutgoingTransaction) -> Result<String, Error> {
-        let params = &[serde_json::to_value(transaction)?];
+        let params = &[arg(serde_json::to_value(transaction)?)];
         self.agent
-            .send_request(&self.agent.build_request("sendTransaction", params))
-            .and_then(|res| res.into_result::<String>())
+            .send_request(self.agent.build_request("sendTransaction", params))
+            .and_then(|res| res.result::<String>())
     }
 
     /// Submits a block to the node. When the block is valid, the node will forward it to other nodes in the network.
@@ -770,10 +774,10 @@ impl Client {
     /// let result = client.submit_block("0da1....234");
     /// ```
     pub fn submit_block(&self, full_block: &str) -> Result<(), Error> {
-        let params = &[serde_json::to_value(full_block)?];
+        let params = &[arg(serde_json::to_value(full_block)?)];
         self.agent
-            .send_request(&self.agent.build_request("submitBlock", params))
-            .and_then(|res| res.into_result::<()>())
+            .send_request(self.agent.build_request("submitBlock", params))
+            .and_then(|res| res.result::<()>())
     }
 
     /// Returns an object with data about the sync status or `false`.
@@ -795,7 +799,7 @@ impl Client {
     /// ```
     pub fn syncing(&self) -> Result<Syncing, Error> {
         self.agent
-            .send_request(&self.agent.build_request("syncing", &[]))
-            .and_then(|res| res.into_result::<Syncing>())
+            .send_request(self.agent.build_request("syncing", &[]))
+            .and_then(|res| res.result::<Syncing>())
     }
 }
