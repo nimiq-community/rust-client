@@ -7,11 +7,50 @@ pub struct Address {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct Account {
+#[serde(untagged)]
+pub enum Account {
+    Basic(BasicAccount),
+    Vesting(VestingAccount),
+    HTLC(HTLCAccount),
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BasicAccount {
     pub id: String,
     pub address: String,
     pub balance: u64,
     pub r#type: u8,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct VestingAccount {
+    pub id: String,
+    pub address: String,
+    pub balance: u64,
+    pub r#type: u8,
+    pub owner: String,
+    pub owner_address: String,
+    pub vesting_start: u64,
+    pub vesting_step_blocks: u64,
+    pub vesting_step_amount: u64,
+    pub vesting_total_amount: u64,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HTLCAccount {
+    pub id: String,
+    pub address: String,
+    pub balance: u64,
+    pub r#type: u8,
+    pub sender: String,
+    pub sender_address: String,
+    pub recipient: String,
+    pub recipient_address: String,
+    pub hash_root: String,
+    pub hash_count: u64,
+    pub timeout: u64,
+    pub total_amount: u64,
 }
 
 #[derive(Debug, Deserialize)]
