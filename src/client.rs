@@ -425,11 +425,14 @@ impl Client {
     /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.get_transaction_by_hash("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554");
     /// ```
-    pub fn get_transaction_by_hash(&self, transaction_hash: &str) -> Result<Transaction, Error> {
+    pub fn get_transaction_by_hash(
+        &self,
+        transaction_hash: &str,
+    ) -> Result<TransactionDetails, Error> {
         let params = &[serde_json::to_value(transaction_hash)?];
         self.agent
             .send_request(&self.agent.build_request("getTransactionByHash", params))
-            .and_then(|res| res.into_result::<Transaction>())
+            .and_then(|res| res.into_result::<TransactionDetails>())
     }
 
     /// Returns the receipt of a transaction by transaction hash.
@@ -484,14 +487,14 @@ impl Client {
         &self,
         address: &str,
         amount: u16,
-    ) -> Result<Vec<Transaction>, Error> {
+    ) -> Result<Vec<TransactionDetails>, Error> {
         let params = &[
             serde_json::to_value(address)?,
             serde_json::to_value(amount)?,
         ];
         self.agent
             .send_request(&self.agent.build_request("getTransactionsByAddress", params))
-            .and_then(|res| res.into_result::<Vec<Transaction>>())
+            .and_then(|res| res.into_result::<Vec<TransactionDetails>>())
     }
 
     /// Returns instructions to mine the next block. This will consider pool instructions when connected to a pool.
