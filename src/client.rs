@@ -197,6 +197,33 @@ impl Client {
         self.agent.request("getAccount", params).await
     }
 
+    /// Returns an Accounts tree chunk.
+    ///
+    /// # Arguments
+    ///
+    /// * `String`: Block hash on which the accounts tree chunk is going to be retrieved.
+    /// * `String`: Start prefix for the accounts tree chunk to retrieve.
+    ///
+    /// # Returns
+    ///
+    /// An Accounts tree chunk containing the tail prefix and the length of the chunk.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use nimiq_rpc::Client;
+    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// let result = client.get_accounts_tree_chunk("14c91f6d6f3a0b62271e546bb09461231ab7e4d1ddc2c3e1b93de52d48a1da87", "").await;
+    /// ```
+    pub async fn get_accounts_tree_chunk(
+        &self,
+        block_hash: &str,
+        start_prefix: &str,
+    ) -> Result<AccountsTreeChunk, Error> {
+        let params = rpc_params![block_hash, start_prefix];
+        self.agent.request("getAccountsTreeChunk", params).await
+    }
+
     /// Returns the balance of the account of given address.
     ///
     /// # Arguments

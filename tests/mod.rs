@@ -46,6 +46,18 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn get_accounts_tree_chunk() {
+        let client = client();
+        client
+            .get_accounts_tree_chunk(
+                "A9284B441B56E93DE62F557414CC9B850BAD2BD30CF84B013CFE2EF6E11B6DA6",
+                "",
+            )
+            .await
+            .unwrap();
+    }
+
+    #[tokio::test]
     async fn get_block_by_hash() {
         let client = client();
         assert_eq!(

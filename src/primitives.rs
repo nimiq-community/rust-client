@@ -56,6 +56,19 @@ pub struct HTLCAccount {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+pub struct AccountsTreeChunk {
+    pub nodes: Vec<AccountsTreeNode>,
+    pub proof: String,
+    pub tail: String,
+}
+
+#[derive(Clone, Debug, Deserialize)]
+pub struct AccountsTreeNode {
+    pub prefix: String,
+    pub account: Account,
+}
+
+#[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Block {
     pub number: u32,
