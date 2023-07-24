@@ -1,6 +1,6 @@
 [package]
 name = "nimiq_rpc"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Stefan Koolen"]
 edition = "2021"
 description = "Nimiq RPC client for Rust"
