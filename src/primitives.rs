@@ -48,6 +48,7 @@ pub struct HTLCAccount {
     pub recipient: String,
     pub recipient_address: String,
     pub hash_root: String,
+    pub hash_algorithm: u8,
     pub hash_count: u64,
     pub timeout: u64,
     pub total_amount: u64,
