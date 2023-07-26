@@ -30,8 +30,8 @@ pub struct VestingAccount {
     pub r#type: u8,
     pub owner: String,
     pub owner_address: String,
-    pub vesting_start: u64,
-    pub vesting_step_blocks: u64,
+    pub vesting_start: u32,
+    pub vesting_step_blocks: u32,
     pub vesting_step_amount: u64,
     pub vesting_total_amount: u64,
 }
@@ -49,8 +49,8 @@ pub struct HTLCAccount {
     pub recipient_address: String,
     pub hash_root: String,
     pub hash_algorithm: u8,
-    pub hash_count: u64,
-    pub timeout: u64,
+    pub hash_count: u8,
+    pub timeout: u32,
     pub total_amount: u64,
 }
 
