@@ -1,12 +1,12 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct Address {
     pub id: String,
     pub address: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
 pub enum Account {
     Basic(BasicAccount),
@@ -14,7 +14,7 @@ pub enum Account {
     HTLC(HTLCAccount),
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct BasicAccount {
     pub id: String,
     pub address: String,
@@ -22,7 +22,7 @@ pub struct BasicAccount {
     pub r#type: u8,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 pub struct VestingAccount {
     pub id: String,
     pub address: String,
@@ -36,7 +36,7 @@ pub struct VestingAccount {
     pub vesting_total_amount: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HTLCAccount {
     pub id: String,
@@ -54,7 +54,7 @@ pub struct HTLCAccount {
     pub total_amount: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Block {
     pub number: u32,
@@ -73,7 +73,7 @@ pub struct Block {
     pub transactions: TransactionSequence,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct FullBlock {
     pub header: Header,
     pub interlink: String,
@@ -81,7 +81,7 @@ pub struct FullBlock {
     pub body: Body,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Header {
     pub version: u16,
@@ -92,7 +92,7 @@ pub struct Header {
     pub height: u32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Body {
     hash: String,
@@ -103,7 +103,7 @@ pub struct Body {
     pruned_accounts: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct GetWork {
     pub data: String,
     pub suffix: String,
@@ -111,7 +111,7 @@ pub struct GetWork {
     pub algorithm: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PeerList {
     pub id: String,
@@ -126,7 +126,7 @@ pub struct PeerList {
     pub tx: Option<u64>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PeerState {
     pub id: String,
@@ -134,14 +134,14 @@ pub struct PeerState {
     pub address_state: u8,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
 pub enum Syncing {
     IsSyncing(bool),
     Pending(Pending),
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Pending {
     starting_block: u32,
@@ -149,11 +149,11 @@ pub struct Pending {
     highest_block: u32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Transaction {
     pub hash: String,
-    pub block_hash: String,
+    pub blocktxn_hash: String,
     pub block_number: u32,
     pub timestamp: u32,
     pub confirmations: u32,
@@ -168,7 +168,7 @@ pub struct Transaction {
     pub flags: u8,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TransactionDetails {
     pub hash: String,
@@ -187,7 +187,7 @@ pub struct TransactionDetails {
     pub flags: u8,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TransactionReceipt {
     pub transaction_hash: String,
@@ -198,7 +198,7 @@ pub struct TransactionReceipt {
     pub timestamp: u32,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[serde(untagged)]
 pub enum TransactionSequence {
@@ -206,7 +206,7 @@ pub enum TransactionSequence {
     Transactions(Vec<Transaction>),
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct OutgoingTransaction {
     pub from: String,
     pub to: String,
@@ -214,7 +214,7 @@ pub struct OutgoingTransaction {
     pub fee: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Wallet {
     pub id: String,
