@@ -1,0 +1,48 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  merge_group:
+  workflow_dispatch:
+
+jobs:
+
+  rustfmt:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: nightly
+        components: rustfmt
+    - run: cargo fmt --all -- --check
+
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+    - name: Build project
+      run: cargo build --release
+
+  clippy:
+    runs-on: ubuntu-22.04
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        components: clippy
+    - uses: actions-rs/clippy-check@v1
+      with:
+        name: Clippy Report
+        token: ${{ secrets.GITHUB_TOKEN }}
+        args: --release --all-features -- -D warnings
