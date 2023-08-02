@@ -9,9 +9,9 @@ pub struct Address {
 #[derive(Clone, Debug, Deserialize)]
 #[serde(untagged)]
 pub enum Account {
-    Basic(BasicAccount),
-    Vesting(VestingAccount),
     HTLC(HTLCAccount),
+    Vesting(VestingAccount),
+    Basic(BasicAccount),
 }
 
 #[derive(Clone, Debug, Deserialize)]
@@ -23,6 +23,7 @@ pub struct BasicAccount {
 }
 
 #[derive(Clone, Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct VestingAccount {
     pub id: String,
     pub address: String,
