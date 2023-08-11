@@ -1,27 +1,40 @@
-use jsonrpc::{arg, client::Client as RpcClient, error::Error, http::minreq_http::Builder};
+use base64::Engine;
+use jsonrpsee::{
+    core::{client::ClientT, Error},
+    rpc_params,
+};
+use jsonrpsee_http_client::{HeaderMap, HttpClient, HttpClientBuilder};
+
+use url::Url;
 
 use crate::primitives::*;
 
 pub struct Client {
-    agent: RpcClient,
+    agent: HttpClient,
 }
 
 impl Client {
-    pub fn new(host: &str) -> Client {
-        let transport = Builder::new().url(host).unwrap().build();
+    pub fn new(url: Url) -> Client {
         Client {
-            agent: RpcClient::with_transport(transport),
+            agent: HttpClientBuilder::default().build(url).unwrap(),
         }
     }
 
-    pub fn new_with_credentials(host: &str, username: String, password: String) -> Client {
-        let transport = Builder::new()
-            .url(host)
-            .unwrap()
-            .basic_auth(username, Some(password))
-            .build();
+    pub fn new_with_credentials(url: Url, username: String, password: String) -> Client {
+        let mut s = username;
+        s.push(':');
+        s.push_str(&password);
+        let auth = format!(
+            "Basic {}",
+            &*base64::prelude::BASE64_STANDARD.encode(s.as_bytes())
+        );
+        let mut headers = HeaderMap::new();
+        headers.insert("Authorization", auth.parse().unwrap());
         Client {
-            agent: RpcClient::with_transport(transport),
+            agent: HttpClientBuilder::default()
+                .set_headers(headers)
+                .build(url)
+                .unwrap(),
         }
     }
 
@@ -42,10 +55,9 @@ impl Client {
     /// let client = Client::new("http://seed-host.com:8648".to_string());
     /// let result = client.accounts();
     /// ```
-    pub fn accounts(&self) -> Result<Vec<Account>, Error> {
-        self.agent
-            .send_request(self.agent.build_request("accounts", &[]))
-            .and_then(|res| res.result::<Vec<Account>>())
+    pub async fn accounts(&self) -> Result<Vec<Account>, Error> {
+        let params = rpc_params![];
+        self.agent.request("accounts", params).await
     }
 
     /// Returns the height of most recent block.
@@ -63,12 +75,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.block_number();
+    /// let result = client.block_number().await;
     /// ```
-    pub fn block_number(&self) -> Result<u32, Error> {
-        self.agent
-            .send_request(self.agent.build_request("blockNumber", &[]))
-            .and_then(|res| res.result::<u32>())
+    pub async fn block_number(&self) -> Result<u32, Error> {
+        let params = rpc_params![];
+        self.agent.request("blockNumber", params).await
     }
 
     /// Returns information on the current consensus state.
@@ -86,12 +97,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.consensus();
+    /// let result = client.consensus().await;
     /// ```
-    pub fn consensus(&self) -> Result<String, Error> {
-        self.agent
-            .send_request(self.agent.build_request("consensus", &[]))
-            .and_then(|res| res.result::<String>())
+    pub async fn consensus(&self) -> Result<String, Error> {
+        let params = rpc_params![];
+        self.agent.request("consensus", params).await
     }
 
     /// Creates a new account and stores its private key in the client store.
@@ -109,12 +119,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.create_account();
+    /// let result = client.create_account().await;
     /// ```
-    pub fn create_account(&self) -> Result<Wallet, Error> {
-        self.agent
-            .send_request(self.agent.build_request("createAccount", &[]))
-            .and_then(|res| res.result::<Wallet>())
+    pub async fn create_account(&self) -> Result<Wallet, Error> {
+        let params = rpc_params![];
+        self.agent.request("createAccount", params).await
     }
 
     /// Creates and signs a transaction without sending it. The transaction can then be send via `sendRawTransaction` without accidentally replaying it.
@@ -138,16 +147,14 @@ impl Client {
     ///    value: 100, //Lunas
     ///    fee: 0
     /// };
-    /// let result = client.create_raw_transaction(&tx);
+    /// let result = client.create_raw_transaction(&tx).await;
     /// ```
-    pub fn create_raw_transaction(
+    pub async fn create_raw_transaction(
         &self,
         raw_transaction: &OutgoingTransaction,
     ) -> Result<String, Error> {
-        let params = &[arg(serde_json::to_value(raw_transaction)?)];
-        self.agent
-            .send_request(self.agent.build_request("createRawTransaction", params))
-            .and_then(|res| res.result::<String>())
+        let params = rpc_params![raw_transaction];
+        self.agent.request("createRawTransaction", params).await
     }
 
     /// Returns details for the account of given address.
@@ -165,13 +172,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_account("ad25610feb43d75307763d3f010822a757027429");
+    /// let result = client.get_account("ad25610feb43d75307763d3f010822a757027429").await;
     /// ```
-    pub fn get_account(&self, id: &str) -> Result<Account, Error> {
-        let params = &[arg(serde_json::to_value(id)?)];
-        self.agent
-            .send_request(self.agent.build_request("getAccount", params))
-            .and_then(|res| res.result::<Account>())
+    pub async fn get_account(&self, id: &str) -> Result<Account, Error> {
+        let params = rpc_params![id];
+        self.agent.request("getAccount", params).await
     }
 
     /// Returns the balance of the account of given address.
@@ -189,13 +194,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_balance("ad25610feb43d75307763d3f010822a757027429");
+    /// let result = client.get_balance("ad25610feb43d75307763d3f010822a757027429").await;
     /// ```
-    pub fn get_balance(&self, id: &str) -> Result<u64, Error> {
-        let params = &[arg(serde_json::to_value(id)?)];
-        self.agent
-            .send_request(self.agent.build_request("getBalance", params))
-            .and_then(|res| res.result::<u64>())
+    pub async fn get_balance(&self, id: &str) -> Result<u64, Error> {
+        let params = rpc_params![id];
+        self.agent.request("getBalance", params).await
     }
 
     /// Returns information about a block by hash.
@@ -214,20 +217,15 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_block_by_hash("14c91f6d6f3a0b62271e546bb09461231ab7e4d1ddc2c3e1b93de52d48a1da87", false);
+    /// let result = client.get_block_by_hash("14c91f6d6f3a0b62271e546bb09461231ab7e4d1ddc2c3e1b93de52d48a1da87", false).await;
     /// ```
-    pub fn get_block_by_hash(
+    pub async fn get_block_by_hash(
         &self,
         block_hash: &str,
         full_transactions: bool,
     ) -> Result<Block, Error> {
-        let params = &[
-            arg(serde_json::to_value(block_hash)?),
-            arg(serde_json::to_value(full_transactions)?),
-        ];
-        self.agent
-            .send_request(self.agent.build_request("getBlockByHash", params))
-            .and_then(|res| res.result::<Block>())
+        let params = rpc_params![block_hash, full_transactions];
+        self.agent.request("getBlockByHash", params).await
     }
 
     /// Returns information about a block by block number.
@@ -246,20 +244,15 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_block_by_number(1234, false);
+    /// let result = client.get_block_by_number(1234, false).await;
     /// ```
-    pub fn get_block_by_number(
+    pub async fn get_block_by_number(
         &self,
         block_number: u32,
         full_transactions: bool,
     ) -> Result<Block, Error> {
-        let params = &[
-            arg(serde_json::to_value(block_number)?),
-            arg(serde_json::to_value(full_transactions)?),
-        ];
-        self.agent
-            .send_request(self.agent.build_request("getBlockByNumber", params))
-            .and_then(|res| res.result::<Block>())
+        let params = rpc_params![block_number, full_transactions];
+        self.agent.request("getBlockByNumber", params).await
     }
 
     /// Returns a template to build the next block for mining. This will consider pool instructions when connected to a pool.
@@ -277,12 +270,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_block_template();
+    /// let result = client.get_block_template().await;
     /// ```
-    pub fn get_block_template(&self) -> Result<FullBlock, Error> {
-        self.agent
-            .send_request(self.agent.build_request("getBlockTemplate", &[]))
-            .and_then(|res| res.result::<FullBlock>())
+    pub async fn get_block_template(&self) -> Result<FullBlock, Error> {
+        let params = rpc_params![];
+        self.agent.request("getBlockTemplate", params).await
     }
 
     /// Returns the number of transactions in a block from a block matching the given block hash.
@@ -300,16 +292,16 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_block_transaction_count_by_hash("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f");
+    /// let result = client.get_block_transaction_count_by_hash("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f").await;
     /// ```
-    pub fn get_block_transaction_count_by_hash(&self, block_hash: &str) -> Result<u16, Error> {
-        let params = &[arg(serde_json::to_value(block_hash)?)];
+    pub async fn get_block_transaction_count_by_hash(
+        &self,
+        block_hash: &str,
+    ) -> Result<u16, Error> {
+        let params = rpc_params![block_hash];
         self.agent
-            .send_request(
-                self.agent
-                    .build_request("getBlockTransactionCountByHash", params),
-            )
-            .and_then(|res| res.result::<u16>())
+            .request("getBlockTransactionCountByHash", params)
+            .await
     }
 
     /// Returns the number of transactions in a block matching the given block number.
@@ -327,16 +319,16 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_block_transaction_count_by_number(76415);
+    /// let result = client.get_block_transaction_count_by_number(76415).await;
     /// ```
-    pub fn get_block_transaction_count_by_number(&self, block_number: u32) -> Result<u16, Error> {
-        let params = &[arg(serde_json::to_value(block_number)?)];
+    pub async fn get_block_transaction_count_by_number(
+        &self,
+        block_number: u32,
+    ) -> Result<u16, Error> {
+        let params = rpc_params![block_number];
         self.agent
-            .send_request(
-                self.agent
-                    .build_request("getBlockTransactionCountByNumber", params),
-            )
-            .and_then(|res| res.result::<u16>())
+            .request("getBlockTransactionCountByNumber", params)
+            .await
     }
 
     /// Returns information about a transaction by block hash and transaction index position.
@@ -355,23 +347,17 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_transaction_by_block_hash_and_index("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f", 20);
+    /// let result = client.get_transaction_by_block_hash_and_index("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f", 20).await;
     /// ```
-    pub fn get_transaction_by_block_hash_and_index(
+    pub async fn get_transaction_by_block_hash_and_index(
         &self,
         block_hash: &str,
         index: u16,
     ) -> Result<Transaction, Error> {
-        let params = &[
-            arg(serde_json::to_value(block_hash)?),
-            arg(serde_json::to_value(index)?),
-        ];
+        let params = rpc_params![block_hash, index];
         self.agent
-            .send_request(
-                self.agent
-                    .build_request("getTransactionByBlockHashAndIndex", params),
-            )
-            .and_then(|res| res.result::<Transaction>())
+            .request("getTransactionByBlockHashAndIndex", params)
+            .await
     }
 
     /// Returns information about a transaction by block number and transaction index position.
@@ -390,23 +376,17 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_transaction_by_block_number_and_index(76415, 20);
+    /// let result = client.get_transaction_by_block_number_and_index(76415, 20).await;
     /// ```
-    pub fn get_transaction_by_block_number_and_index(
+    pub async fn get_transaction_by_block_number_and_index(
         &self,
         block_number: u32,
         index: u16,
     ) -> Result<Transaction, Error> {
-        let params = &[
-            arg(serde_json::to_value(block_number)?),
-            arg(serde_json::to_value(index)?),
-        ];
+        let params = rpc_params![block_number, index];
         self.agent
-            .send_request(
-                self.agent
-                    .build_request("getTransactionByBlockNumberAndIndex", params),
-            )
-            .and_then(|res| res.result::<Transaction>())
+            .request("getTransactionByBlockNumberAndIndex", params)
+            .await
     }
 
     /// Returns the information about a transaction requested by transaction hash.
@@ -424,16 +404,14 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_transaction_by_hash("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554");
+    /// let result = client.get_transaction_by_hash("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554").await;
     /// ```
-    pub fn get_transaction_by_hash(
+    pub async fn get_transaction_by_hash(
         &self,
         transaction_hash: &str,
     ) -> Result<TransactionDetails, Error> {
-        let params = &[arg(serde_json::to_value(transaction_hash)?)];
-        self.agent
-            .send_request(self.agent.build_request("getTransactionByHash", params))
-            .and_then(|res| res.result::<TransactionDetails>())
+        let params = rpc_params![transaction_hash];
+        self.agent.request("getTransactionByHash", params).await
     }
 
     /// Returns the receipt of a transaction by transaction hash.
@@ -452,16 +430,14 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_transaction_receipt("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554");
+    /// let result = client.get_transaction_receipt("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554").await;
     /// ```
-    pub fn get_transaction_receipt(
+    pub async fn get_transaction_receipt(
         &self,
         transaction_hash: &str,
     ) -> Result<TransactionReceipt, Error> {
-        let params = &[arg(serde_json::to_value(transaction_hash)?)];
-        self.agent
-            .send_request(self.agent.build_request("getTransactionReceipt", params))
-            .and_then(|res| res.result::<TransactionReceipt>())
+        let params = rpc_params![transaction_hash];
+        self.agent.request("getTransactionReceipt", params).await
     }
 
     /// Returns the latest transactions successfully performed by or for an address.
@@ -482,20 +458,15 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_transactions_by_address("NQ69 9A4A MB83 HXDQ 4J46 BH5R 4JFF QMA9 C3GN", 10);
+    /// let result = client.get_transactions_by_address("NQ69 9A4A MB83 HXDQ 4J46 BH5R 4JFF QMA9 C3GN", 10).await;
     /// ```
-    pub fn get_transactions_by_address(
+    pub async fn get_transactions_by_address(
         &self,
         address: &str,
         amount: u16,
     ) -> Result<Vec<TransactionDetails>, Error> {
-        let params = &[
-            arg(serde_json::to_value(address)?),
-            arg(serde_json::to_value(amount)?),
-        ];
-        self.agent
-            .send_request(self.agent.build_request("getTransactionsByAddress", params))
-            .and_then(|res| res.result::<Vec<TransactionDetails>>())
+        let params = rpc_params![address, amount];
+        self.agent.request("getTransactionsByAddress", params).await
     }
 
     /// Returns instructions to mine the next block. This will consider pool instructions when connected to a pool.
@@ -513,12 +484,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.get_work();
+    /// let result = client.get_work().await;
     /// ```
-    pub fn get_work(&self) -> Result<GetWork, Error> {
-        self.agent
-            .send_request(self.agent.build_request("getWork", &[]))
-            .and_then(|res| res.result::<GetWork>())
+    pub async fn get_work(&self) -> Result<GetWork, Error> {
+        let params = rpc_params![];
+        self.agent.request("getWork", params).await
     }
 
     /// Returns the number of hashes per second that the node is mining with.
@@ -536,12 +506,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.hashrate();
+    /// let result = client.hashrate().await;
     /// ```
-    pub fn hashrate(&self) -> Result<f64, Error> {
-        self.agent
-            .send_request(self.agent.build_request("hashrate", &[]))
-            .and_then(|res| res.result::<f64>())
+    pub async fn hashrate(&self) -> Result<f64, Error> {
+        let params = rpc_params![];
+        self.agent.request("hashrate", params).await
     }
 
     /// Sets the log level of the node.
@@ -560,54 +529,41 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.log("*", "log");
+    /// let result = client.log("*", "log").await;
     /// ```
-    pub fn log(&self, tag: &str, level: &str) -> Result<bool, Error> {
-        let params = &[
-            arg(serde_json::to_value(tag)?),
-            arg(serde_json::to_value(level)?),
-        ];
-        self.agent
-            .send_request(self.agent.build_request("log", params))
-            .and_then(|res| res.result::<bool>())
+    pub async fn log(&self, tag: &str, level: &str) -> Result<bool, Error> {
+        let params = rpc_params![tag, level];
+        self.agent.request("log", params).await
     }
 
-    pub fn mempool_content(&self) -> Result<Vec<String>, Error> {
-        self.agent
-            .send_request(self.agent.build_request("mempoolContent", &[]))
-            .and_then(|res| res.result::<Vec<String>>())
+    pub async fn mempool_content(&self) -> Result<Vec<String>, Error> {
+        let params = rpc_params![];
+        self.agent.request("mempoolContent", params).await
     }
 
-    pub fn miner_address(&self) -> Result<String, Error> {
-        self.agent
-            .send_request(self.agent.build_request("minerAddress", &[]))
-            .and_then(|res| res.result::<String>())
+    pub async fn miner_address(&self) -> Result<String, Error> {
+        let params = rpc_params![];
+        self.agent.request("minerAddress", params).await
     }
 
-    pub fn miner_threads(&self) -> Result<u8, Error> {
-        self.agent
-            .send_request(self.agent.build_request("minerThreads", &[]))
-            .and_then(|res| res.result::<u8>())
+    pub async fn miner_threads(&self) -> Result<u8, Error> {
+        let params = rpc_params![];
+        self.agent.request("minerThreads", params).await
     }
 
-    pub fn miner_threads_with_update(&self, threads: u16) -> Result<u16, Error> {
-        let params = &[arg(serde_json::to_value(threads)?)];
-        self.agent
-            .send_request(self.agent.build_request("minerThreads", params))
-            .and_then(|res| res.result::<u16>())
+    pub async fn miner_threads_with_update(&self, threads: u16) -> Result<u16, Error> {
+        let params = rpc_params![threads];
+        self.agent.request("minerThreads", params).await
     }
 
-    pub fn min_fee_per_byte(&self) -> Result<u32, Error> {
-        self.agent
-            .send_request(self.agent.build_request("minFeePerByte", &[]))
-            .and_then(|res| res.result::<u32>())
+    pub async fn min_fee_per_byte(&self) -> Result<u32, Error> {
+        let params = rpc_params![];
+        self.agent.request("minFeePerByte", params).await
     }
 
-    pub fn min_fee_per_byte_with_update(&self, fee: u32) -> Result<u32, Error> {
-        let params = &[arg(serde_json::to_value(fee)?)];
-        self.agent
-            .send_request(self.agent.build_request("minFeePerByte", params))
-            .and_then(|res| res.result::<u32>())
+    pub async fn min_fee_per_byte_with_update(&self, fee: u32) -> Result<u32, Error> {
+        let params = rpc_params![fee];
+        self.agent.request("minFeePerByte", params).await
     }
 
     /// Returns `true` if client is actively mining new blocks.
@@ -625,12 +581,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.mining();
+    /// let result = client.mining().await;
     /// ```
-    pub fn mining(&self) -> Result<bool, Error> {
-        self.agent
-            .send_request(self.agent.build_request("mining", &[]))
-            .and_then(|res| res.result::<bool>())
+    pub async fn mining(&self) -> Result<bool, Error> {
+        let params = rpc_params![];
+        self.agent.request("mining", params).await
     }
 
     /// Returns number of peers currently connected to the client.
@@ -648,51 +603,40 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.peer_count();
+    /// let result = client.peer_count().await;
     /// ```
-    pub fn peer_count(&self) -> Result<i8, Error> {
-        self.agent
-            .send_request(self.agent.build_request("peerCount", &[]))
-            .and_then(|res| res.result::<i8>())
+    pub async fn peer_count(&self) -> Result<i8, Error> {
+        let params = rpc_params![];
+        self.agent.request("peerCount", params).await
     }
 
-    pub fn peer_list(&self) -> Result<Vec<PeerList>, Error> {
-        self.agent
-            .send_request(self.agent.build_request("peerList", &[]))
-            .and_then(|res| res.result::<Vec<PeerList>>())
+    pub async fn peer_list(&self) -> Result<Vec<PeerList>, Error> {
+        let params = rpc_params![];
+        self.agent.request("peerList", params).await
     }
 
-    pub fn peer_state(&self, peer_address: &str) -> Result<PeerState, Error> {
-        let params = &[arg(serde_json::to_value(peer_address)?)];
-        self.agent
-            .send_request(self.agent.build_request("peerState", params))
-            .and_then(|res| res.result::<PeerState>())
+    pub async fn peer_state(&self, peer_address: &str) -> Result<PeerState, Error> {
+        let params = rpc_params![peer_address];
+        self.agent.request("peerState", params).await
     }
 
-    pub fn peer_state_with_update(
+    pub async fn peer_state_with_update(
         &self,
         peer_address: &str,
         set: &str,
     ) -> Result<PeerState, Error> {
-        let params = &[
-            arg(serde_json::to_value(peer_address)?),
-            arg(serde_json::to_value(set)?),
-        ];
-        self.agent
-            .send_request(self.agent.build_request("peerState", params))
-            .and_then(|res| res.result::<PeerState>())
+        let params = rpc_params![peer_address, set];
+        self.agent.request("peerState", params).await
     }
 
-    pub fn pool_confirmed_balance(&self) -> Result<u64, Error> {
-        self.agent
-            .send_request(self.agent.build_request("poolConfirmedBalance", &[]))
-            .and_then(|res| res.result::<u64>())
+    pub async fn pool_confirmed_balance(&self) -> Result<u64, Error> {
+        let params = rpc_params![];
+        self.agent.request("poolConfirmedBalance", params).await
     }
 
-    pub fn pool_connection_state(&self) -> Result<u8, Error> {
-        self.agent
-            .send_request(self.agent.build_request("poolConnectionState", &[]))
-            .and_then(|res| res.result::<u8>())
+    pub async fn pool_connection_state(&self) -> Result<u8, Error> {
+        let params = rpc_params![];
+        self.agent.request("poolConnectionState", params).await
     }
 
     /// Sends a signed message call transaction or a contract creation, if the data field contains code.
@@ -716,14 +660,12 @@ impl Client {
     ///    value: 100, //Lunas
     ///    fee: 0
     /// };
-    /// let result = client.create_raw_transaction(&tx);
-    /// let hash = client.send_raw_transaction(&result);
+    /// let result = client.create_raw_transaction(&tx).await;
+    /// let hash = client.send_raw_transaction(&result).await;
     /// ```
-    pub fn send_raw_transaction(&self, transaction_hash: &str) -> Result<String, Error> {
-        let params = &[arg(serde_json::to_value(transaction_hash)?)];
-        self.agent
-            .send_request(self.agent.build_request("sendRawTransaction", params))
-            .and_then(|res| res.result::<String>())
+    pub async fn send_raw_transaction(&self, transaction_hash: &str) -> Result<String, Error> {
+        let params = rpc_params![transaction_hash];
+        self.agent.request("sendRawTransaction", params).await
     }
 
     /// Creates new message call transaction or a contract creation, if the data field contains code.
@@ -747,13 +689,14 @@ impl Client {
     ///    value: 100, //Lunas
     ///    fee: 0
     /// };
-    /// let result = client.send_transaction(&tx);
+    /// let result = client.send_transaction(&tx).await;
     /// ```
-    pub fn send_transaction(&self, transaction: &OutgoingTransaction) -> Result<String, Error> {
-        let params = &[arg(serde_json::to_value(transaction)?)];
-        self.agent
-            .send_request(self.agent.build_request("sendTransaction", params))
-            .and_then(|res| res.result::<String>())
+    pub async fn send_transaction(
+        &self,
+        transaction: &OutgoingTransaction,
+    ) -> Result<String, Error> {
+        let params = rpc_params![transaction];
+        self.agent.request("sendTransaction", params).await
     }
 
     /// Submits a block to the node. When the block is valid, the node will forward it to other nodes in the network.
@@ -771,13 +714,11 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.submit_block("0da1....234");
+    /// let result = client.submit_block("0da1....234").await;
     /// ```
-    pub fn submit_block(&self, full_block: &str) -> Result<(), Error> {
-        let params = &[arg(serde_json::to_value(full_block)?)];
-        self.agent
-            .send_request(self.agent.build_request("submitBlock", params))
-            .and_then(|res| res.result::<()>())
+    pub async fn submit_block(&self, full_block: &str) -> Result<(), Error> {
+        let params = rpc_params![full_block];
+        self.agent.request("submitBlock", params).await
     }
 
     /// Returns an object with data about the sync status or `false`.
@@ -795,11 +736,10 @@ impl Client {
     /// ```
     /// use nimiq_rpc::Client;
     /// let client = Client::new("http://seed-host.com:8648".to_string());
-    /// let result = client.syncing();
+    /// let result = client.syncing().await;
     /// ```
-    pub fn syncing(&self) -> Result<Syncing, Error> {
-        self.agent
-            .send_request(self.agent.build_request("syncing", &[]))
-            .and_then(|res| res.result::<Syncing>())
+    pub async fn syncing(&self) -> Result<Syncing, Error> {
+        let params = rpc_params![];
+        self.agent.request("syncing", params).await
     }
 }
