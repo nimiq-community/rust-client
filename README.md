@@ -6,22 +6,25 @@
 
 ## About
 
-A Nimiq RPC client library in Rust. This client library implements the [Nimiq RPC specification](https://github.com/nimiq/core-js/wiki/JSON-RPC-API). The client uses the jsonrpc library to handle JSON-RPC 2.0 requests and responses. For more information about this library see the [jsonrpc documentation](https://docs.rs/jsonrpc/0.11.0/jsonrpc/)
+A Nimiq RPC client library in Rust. This client library implements the [Nimiq RPC specification](https://github.com/nimiq/core-js/wiki/JSON-RPC-API).
+The client uses the `jsonrpsee` library to handle JSON-RPC 2.0 requests and responses. For more information about this
+library see the [jsonrpsee HTTP client documentation](https://docs.rs/jsonrpsee-http-client/0.20.0/jsonrpsee_http_client/).
 
 ## Usage
 
 ``` rust
 use nimiq_rpc::Client;
 
-fn main() {
+#[tokio::main]
+async fn main() {
 	let client = Client::new("http://seed-host.com:8648/".to_string());
 	// If your node uses credentials
 	let client = Client::new_with_credentials("http://seed-host.com:8648/".to_string(), "user".to_string(), "password".to_string());
 	
-	println!("{:?}", client.accounts().unwrap());
-	println!("{:?}", client.block_number().unwrap());
-	println!("{:?}", client.hashrate().unwrap());
-	println!("{:?}", client.log("*", "log").unwrap());
+	println!("{:?}", client.accounts().await.unwrap());
+	println!("{:?}", client.block_number().await.unwrap());
+	println!("{:?}", client.hashrate().await.unwrap());
+	println!("{:?}", client.log("*", "log").await.unwrap());
 }
 ```
 
