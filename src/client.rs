@@ -820,4 +820,80 @@ impl Client {
         let params = rpc_params![];
         self.agent.request("syncing", params).await
     }
+
+    /// Returns a constant
+    ///
+    /// # Arguments
+    ///
+    /// * `String`: Name of the constant to be obtained.
+    ///
+    /// # Returns
+    ///
+    /// An integer with the value of the constant.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use nimiq_rpc::Client;
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
+    /// let result = client.get_constant("BaseMiniConsensusAgent.MEMPOOL_DELAY_MIN").await;
+    /// # })
+    /// ```
+    pub async fn get_constant(&self, constant: &str) -> Result<u64, Error> {
+        let params = rpc_params![constant];
+        self.agent.request("constant", params).await
+    }
+
+    /// Sets a constant with the value provided and returns the new value on success
+    ///
+    /// # Arguments
+    ///
+    /// * `String`: Name of the constant to be set.
+    /// * `Int`: The value to be set to the constant.
+    ///
+    /// # Returns
+    ///
+    /// An integer with the new value of the constant.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use nimiq_rpc::Client;
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
+    /// let result = client.set_constant("BaseMiniConsensusAgent.MEMPOOL_DELAY_MIN", 6).await;
+    /// # })
+    /// ```
+    pub async fn set_constant(&self, constant: &str, value: u64) -> Result<u64, Error> {
+        let params = rpc_params![constant, value];
+        self.agent.request("constant", params).await
+    }
+
+    /// Resets a constant and returns the new value on success
+    ///
+    /// # Arguments
+    ///
+    /// * `String`: Name of the constant to be reset.
+    ///
+    /// # Returns
+    ///
+    /// An integer with the new value of the constant.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use nimiq_rpc::Client;
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
+    /// let result = client.reset_constant("BaseMiniConsensusAgent.MEMPOOL_DELAY_MIN").await;
+    /// # })
+    /// ```
+    pub async fn reset_constant(&self, constant: &str) -> Result<u64, Error> {
+        let params = rpc_params![constant, "reset"];
+        self.agent.request("constant", params).await
+    }
 }

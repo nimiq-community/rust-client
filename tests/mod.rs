@@ -313,4 +313,35 @@ mod tests {
             primitives::Syncing::Pending(_) => assert!(true),
         }
     }
+
+    #[tokio::test]
+    async fn constant() {
+        let client = client();
+        let constant = client
+            .get_constant("BaseConsensusAgent.FREE_TRANSACTIONS_PER_SECOND")
+            .await
+            .unwrap();
+        assert_eq!(constant, 1);
+
+        // Now set the constant
+        let constant = client
+            .set_constant("BaseConsensusAgent.TRANSACTION_RELAY_FEE_MIN", 2)
+            .await
+            .unwrap();
+        assert_eq!(constant, 2);
+
+        // Get constant again
+        let constant = client
+            .get_constant("BaseConsensusAgent.TRANSACTION_RELAY_FEE_MIN")
+            .await
+            .unwrap();
+        assert_eq!(constant, 2);
+
+        // Reset constant
+        let constant = client
+            .reset_constant("BaseConsensusAgent.TRANSACTION_RELAY_FEE_MIN")
+            .await
+            .unwrap();
+        assert_eq!(constant, 1);
+    }
 }
