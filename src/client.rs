@@ -52,8 +52,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.accounts();
+    /// # })
     /// ```
     pub async fn accounts(&self) -> Result<Vec<Account>, Error> {
         let params = rpc_params![];
@@ -74,8 +77,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.block_number().await;
+    /// # })
     /// ```
     pub async fn block_number(&self) -> Result<u32, Error> {
         let params = rpc_params![];
@@ -96,8 +102,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.consensus().await;
+    /// # })
     /// ```
     pub async fn consensus(&self) -> Result<String, Error> {
         let params = rpc_params![];
@@ -118,8 +127,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.create_account().await;
+    /// # })
     /// ```
     pub async fn create_account(&self) -> Result<Wallet, Error> {
         let params = rpc_params![];
@@ -140,7 +152,9 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let tx = nimiq_rpc::primitives::OutgoingTransaction {
     ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42".to_string(),
     ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3".to_string(),
@@ -148,6 +162,7 @@ impl Client {
     ///    fee: 0
     /// };
     /// let result = client.create_raw_transaction(&tx).await;
+    /// # })
     /// ```
     pub async fn create_raw_transaction(
         &self,
@@ -171,8 +186,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_account("ad25610feb43d75307763d3f010822a757027429").await;
+    /// # })
     /// ```
     pub async fn get_account(&self, id: &str) -> Result<Account, Error> {
         let params = rpc_params![id];
@@ -187,14 +205,17 @@ impl Client {
     ///
     /// # Returns
     ///
-    /// Details about the account. The current balance at the specified address (in smalest unit).
+    /// Details about the account. The current balance at the specified address (in smallest unit).
     ///
     /// # Example
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_balance("ad25610feb43d75307763d3f010822a757027429").await;
+    /// # })
     /// ```
     pub async fn get_balance(&self, id: &str) -> Result<u64, Error> {
         let params = rpc_params![id];
@@ -216,8 +237,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_block_by_hash("14c91f6d6f3a0b62271e546bb09461231ab7e4d1ddc2c3e1b93de52d48a1da87", false).await;
+    /// # })
     /// ```
     pub async fn get_block_by_hash(
         &self,
@@ -243,8 +267,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_block_by_number(1234, false).await;
+    /// # })
     /// ```
     pub async fn get_block_by_number(
         &self,
@@ -269,8 +296,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_block_template().await;
+    /// # })
     /// ```
     pub async fn get_block_template(&self) -> Result<FullBlock, Error> {
         let params = rpc_params![];
@@ -291,8 +321,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_block_transaction_count_by_hash("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f").await;
+    /// # })
     /// ```
     pub async fn get_block_transaction_count_by_hash(
         &self,
@@ -318,8 +351,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_block_transaction_count_by_number(76415).await;
+    /// # })
     /// ```
     pub async fn get_block_transaction_count_by_number(
         &self,
@@ -346,8 +382,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_transaction_by_block_hash_and_index("dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f", 20).await;
+    /// # })
     /// ```
     pub async fn get_transaction_by_block_hash_and_index(
         &self,
@@ -375,8 +414,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_transaction_by_block_number_and_index(76415, 20).await;
+    /// # })
     /// ```
     pub async fn get_transaction_by_block_number_and_index(
         &self,
@@ -403,8 +445,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_transaction_by_hash("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554").await;
+    /// # })
     /// ```
     pub async fn get_transaction_by_hash(
         &self,
@@ -429,8 +474,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_transaction_receipt("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554").await;
+    /// # })
     /// ```
     pub async fn get_transaction_receipt(
         &self,
@@ -457,8 +505,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_transactions_by_address("NQ69 9A4A MB83 HXDQ 4J46 BH5R 4JFF QMA9 C3GN", 10).await;
+    /// # })
     /// ```
     pub async fn get_transactions_by_address(
         &self,
@@ -483,8 +534,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.get_work().await;
+    /// # })
     /// ```
     pub async fn get_work(&self) -> Result<GetWork, Error> {
         let params = rpc_params![];
@@ -505,8 +559,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.hashrate().await;
+    /// # })
     /// ```
     pub async fn hashrate(&self) -> Result<f64, Error> {
         let params = rpc_params![];
@@ -528,8 +585,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.log("*", "log").await;
+    /// # })
     /// ```
     pub async fn log(&self, tag: &str, level: &str) -> Result<bool, Error> {
         let params = rpc_params![tag, level];
@@ -580,8 +640,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.mining().await;
+    /// # })
     /// ```
     pub async fn mining(&self) -> Result<bool, Error> {
         let params = rpc_params![];
@@ -602,8 +665,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.peer_count().await;
+    /// # })
     /// ```
     pub async fn peer_count(&self) -> Result<i8, Error> {
         let params = rpc_params![];
@@ -653,7 +719,9 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let tx = nimiq_rpc::primitives::OutgoingTransaction {
     ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42".to_string(),
     ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3".to_string(),
@@ -661,7 +729,8 @@ impl Client {
     ///    fee: 0
     /// };
     /// let result = client.create_raw_transaction(&tx).await;
-    /// let hash = client.send_raw_transaction(&result).await;
+    /// let hash = client.send_raw_transaction(&result.unwrap()).await;
+    /// # })
     /// ```
     pub async fn send_raw_transaction(&self, transaction_hash: &str) -> Result<String, Error> {
         let params = rpc_params![transaction_hash];
@@ -682,7 +751,9 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let tx = nimiq_rpc::primitives::OutgoingTransaction {
     ///    from: "NQ32 R6DB VFM5 M931 7X4E 0N5Q LJ56 9QCR 4T42".to_string(),
     ///    to: "NQ74 61S8 2FD3 RVPG HU09 1Y57 77E6 BL38 TQH3".to_string(),
@@ -690,6 +761,7 @@ impl Client {
     ///    fee: 0
     /// };
     /// let result = client.send_transaction(&tx).await;
+    /// # })
     /// ```
     pub async fn send_transaction(
         &self,
@@ -713,8 +785,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.submit_block("0da1....234").await;
+    /// # })
     /// ```
     pub async fn submit_block(&self, full_block: &str) -> Result<(), Error> {
         let params = rpc_params![full_block];
@@ -735,8 +810,11 @@ impl Client {
     ///
     /// ```
     /// use nimiq_rpc::Client;
-    /// let client = Client::new("http://seed-host.com:8648".to_string());
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
     /// let result = client.syncing().await;
+    /// # })
     /// ```
     pub async fn syncing(&self) -> Result<Syncing, Error> {
         let params = rpc_params![];
