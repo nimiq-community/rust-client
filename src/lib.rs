@@ -1,3 +1,5 @@
+pub extern crate jsonrpsee;
+
 mod client;
 
 pub mod primitives;
