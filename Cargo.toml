@@ -14,7 +14,7 @@ license = "Apache-2.0"
 [dependencies]
 async-trait = "0.1"
 base64 = "0.21"
-jsonrpsee = { version = "0.20", features = ["client-core", "http-client"] }
+jsonrpsee = { version = "0.22", features = ["client-core", "http-client"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 url = "2.3"

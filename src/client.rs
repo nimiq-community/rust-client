@@ -1,6 +1,6 @@
 use base64::Engine;
 use jsonrpsee::{
-    core::{client::ClientT, Error},
+    core::{client::ClientT, ClientError as Error},
     http_client::{HeaderMap, HttpClient, HttpClientBuilder},
     rpc_params,
 };
