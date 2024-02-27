@@ -1,9 +1,9 @@
 use base64::Engine;
 use jsonrpsee::{
     core::{client::ClientT, Error},
+    http_client::{HeaderMap, HttpClient, HttpClientBuilder},
     rpc_params,
 };
-use jsonrpsee_http_client::{HeaderMap, HttpClient, HttpClientBuilder};
 
 use url::Url;
 
