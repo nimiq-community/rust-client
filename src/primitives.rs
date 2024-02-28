@@ -203,6 +203,29 @@ pub struct TransactionDetails {
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct TransactionDetails2 {
+    pub hash: String,
+    pub block_hash: String,
+    pub block_number: u32,
+    pub timestamp: u32,
+    pub confirmations: u32,
+    pub from: String,
+    pub from_address: String,
+    pub from_type: u8,
+    pub to: String,
+    pub to_type: u8,
+    pub to_address: String,
+    pub value: u64,
+    pub fee: u64,
+    pub data: Option<String>,
+    pub proof: Option<String>,
+    pub flags: u8,
+    pub validity_start_height: u32,
+    pub network_id: u8,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct TransactionReceipt {
     pub transaction_hash: String,
     pub transaction_index: i32,

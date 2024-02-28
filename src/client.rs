@@ -486,6 +486,34 @@ impl Client {
         self.agent.request("getTransactionByHash", params).await
     }
 
+    /// Returns the information about a transaction requested by transaction hash.
+    ///
+    /// # Arguments
+    ///
+    /// * `String`: Hash of a transaction
+    ///
+    /// # Returns
+    ///
+    /// A transaction object or `null` when no transaction was found.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use nimiq_rpc::Client;
+    /// use url::Url;
+    /// # tokio_test::block_on(async {
+    /// let client = Client::new(Url::parse("http://seed-host.com:8648").unwrap());
+    /// let result = client.get_transaction_by_hash_2("465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554").await;
+    /// # })
+    /// ```
+    pub async fn get_transaction_by_hash_2(
+        &self,
+        transaction_hash: &str,
+    ) -> Result<TransactionDetails2, Error> {
+        let params = rpc_params![transaction_hash];
+        self.agent.request("getTransactionByHash2", params).await
+    }
+
     /// Returns the receipt of a transaction by transaction hash.
     /// `Note` That the receipt is not available for pending transactions.
     ///

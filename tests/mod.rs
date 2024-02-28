@@ -188,6 +188,21 @@ mod tests {
     }
 
     #[tokio::test]
+    async fn get_transaction_by_hash_2() {
+        let client = client();
+        assert_eq!(
+            client
+                .get_transaction_by_hash_2(
+                    "465a63b73aa0b9b54b777be9a585ea00b367a17898ad520e1f22cb2c986ff554"
+                )
+                .await
+                .unwrap()
+                .block_hash,
+            "dfe7d166f2c86bd10fa4b1f29cd06c13228f893167ce9826137c85758645572f"
+        );
+    }
+
+    #[tokio::test]
     async fn get_transaction_receipt() {
         let client = client();
         assert_eq!(
