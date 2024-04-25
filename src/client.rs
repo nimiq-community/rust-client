@@ -9,6 +9,7 @@ use url::Url;
 
 use crate::primitives::*;
 
+#[derive(Clone)]
 pub struct Client {
     agent: HttpClient,
 }
