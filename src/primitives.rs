@@ -249,6 +249,7 @@ pub struct OutgoingTransaction {
     pub to: String,
     pub value: u64,
     pub fee: u64,
+    pub data: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize)]
