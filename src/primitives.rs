@@ -186,10 +186,10 @@ pub struct Transaction {
 #[serde(rename_all = "camelCase")]
 pub struct TransactionDetails {
     pub hash: String,
-    pub block_hash: String,
-    pub block_number: u32,
-    pub timestamp: u32,
-    pub confirmations: u32,
+    pub block_hash: Option<String>,
+    pub block_number: Option<u32>,
+    pub timestamp: Option<u32>,
+    pub confirmations: Option<u32>,
     pub from: String,
     pub from_address: String,
     pub to: String,
@@ -205,10 +205,10 @@ pub struct TransactionDetails {
 #[serde(rename_all = "camelCase")]
 pub struct TransactionDetails2 {
     pub hash: String,
-    pub block_hash: String,
-    pub block_number: u32,
-    pub timestamp: u32,
-    pub confirmations: u32,
+    pub block_hash: Option<String>,
+    pub block_number: Option<u32>,
+    pub timestamp: Option<u32>,
+    pub confirmations: Option<u32>,
     pub from: String,
     pub from_address: String,
     pub from_type: u8,
