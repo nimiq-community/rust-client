@@ -4,6 +4,10 @@
 
 > Rust implementation of the Nimiq RPC client specs.
 
+This repository is archived: Nimiq PoS has been launched and this RPC client only supports the
+old PoW RPC specification. Please refer to the `nimiq-rpc-client` crate implementation at the
+[Nimiq PoS repository](https://github.com/nimiq/core-rs-albatross).
+
 ## About
 
 A Nimiq RPC client library in Rust. This client library implements the [Nimiq RPC specification](https://github.com/nimiq/core-js/wiki/JSON-RPC-API).
